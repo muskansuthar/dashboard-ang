@@ -1,6 +1,5 @@
-import { Breadcrumbs, Button, Checkbox, Chip, Pagination } from "@mui/material";
+import { Breadcrumbs, Button, Chip, Pagination } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
 
@@ -9,8 +8,6 @@ import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MyContext } from "../../App";
 import { deleteData, fetchDataFromApi } from "../../utils/api";
-
-const label = { inputProps: { 'aria-label': 'Checkbox demo' } }
 
 //breadcrump code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -81,7 +78,7 @@ const LegFinish = () => {
         <>
             <div className="right-content w-100">
                 <div className="card shadow border-0 w-100 flex-row p-4">
-                    <h5 className="mb-0">Category List</h5>
+                    <h5 className="mb-0">Leg Finish List</h5>
                     <div className="ml-auto d-flex align-items-center">
                         <Breadcrumbs aria-label="breadcrumb" className="ml-auto breadcrumbs_">
                             <StyledBreadcrumb
@@ -107,7 +104,6 @@ const LegFinish = () => {
                         <table className="table table-bordered v-align">
                             <thead className="thead-dark">
                                 <tr>
-                                    <th style={{ width: '100px' }}>IMAGE</th>
                                     <th>LEG FINISH</th>
                                     <th>ACTION</th>
                                 </tr>
@@ -117,21 +113,9 @@ const LegFinish = () => {
                                     catData?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => {
                                         return (
                                             <tr key={index}>
-                                                <td>
-                                                    <div className="d-flex align-items-center productBox">
-                                                        <div className="imgWrapper">
-                                                            <div className="img card shadow m-0">
-                                                                <img src={`${context.baseUrl}/uploads/${item.images[0]}`} className="w-100" alt="" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
                                                 <td>{item.name}</td>
                                                 <td>
                                                     <div className="actions d-flex align-items-center">
-                                                        <Link to={`/legFinish/edit/${item._id}`}>
-                                                            <Button className="success" color="success"><FaPencilAlt /></Button>
-                                                        </Link>
                                                         <Button className="error" color="error" onClick={() => deleteCat(item._id)}><MdDelete /></Button>
                                                     </div>
                                                 </td>

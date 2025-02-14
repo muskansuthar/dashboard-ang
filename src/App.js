@@ -21,16 +21,12 @@ import EditProduct from './pages/Products/editProduct';
 import { fetchDataFromApi } from './utils/api';
 import axios from "axios";
 import TopMaterial from './pages/TopMaterial/topMaterialList';
-import EditTopMaterial from './pages/TopMaterial/editTopMaterial';
 import AddTopMaterial from './pages/TopMaterial/addTopMaterial';
 import AddTopFinish from './pages/TopFinish/addTopFinish';
-import EditTopFinish from './pages/TopFinish/editTopFinish';
 import TopFinish from './pages/TopFinish/topFinishList';
-import EditLegMaterial from './pages/LegMaterial/editLegMaterial';
 import AddLegMaterial from './pages/LegMaterial/addLegMaterial';
 import LegMaterial from './pages/LegMaterial/legMaterialList';
 import LegFinish from './pages/LegFinish/legFinishList';
-import EditLegFinish from './pages/LegFinish/editLegFinish';
 import AddLegFinish from './pages/LegFinish/addLegFinish';
 import Top from './pages/Top/topList';
 import AddTop from './pages/Top/addTop';
@@ -241,16 +237,12 @@ function App() {
               <Route path='/category/edit/:id' exact={true} element={<EditCategory />} />
               <Route path='/legFinish' exact={true} element={<LegFinish />} />
               <Route path='/legFinish/add' exact={true} element={<AddLegFinish />} />
-              <Route path='/legFinish/edit/:id' exact={true} element={<EditLegFinish />} />
               <Route path='/legMaterial' exact={true} element={<LegMaterial />} />
               <Route path='/legMaterial/add' exact={true} element={<AddLegMaterial />} />
-              <Route path='/legMaterial/edit/:id' exact={true} element={<EditLegMaterial />} />
               <Route path='/topFinish' exact={true} element={<TopFinish />} />
               <Route path='/topFinish/add' exact={true} element={<AddTopFinish />} />
-              <Route path='/topFinish/edit/:id' exact={true} element={<EditTopFinish />} />
               <Route path='/topMaterial' exact={true} element={<TopMaterial />} />
               <Route path='/topMaterial/add' exact={true} element={<AddTopMaterial />} />
-              <Route path='/topMaterial/edit/:id' exact={true} element={<EditTopMaterial />} />
               <Route path='/top' exact={true} element={<Top />} />
               <Route path='/top/add' exact={true} element={<AddTop />} />
               <Route path='/edge' exact={true} element={<Edge />} />
