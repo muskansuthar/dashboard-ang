@@ -33,7 +33,7 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 
 const LegMaterial = () => {
 
-    const [catData, setCatData] = useState([])
+    const [legmaterialData, setLegmaterialData] = useState([])
 
     const context = useContext(MyContext)
 
@@ -42,37 +42,29 @@ const LegMaterial = () => {
 
         context.setProgress(20)
 
-        fetchDataFromApi('/api/category').then(res => {
-            setCatData(res)
+        fetchDataFromApi('/api/legmaterial').then(res => {
+            setLegmaterialData(res)
             context.setProgress(100)
         })
     }, [])
 
 
-    const deleteCat = (id) => {
+    const deleteLegMat = (id) => {
         context.setProgress(40)
-        deleteData(`/api/category/${id}`).then(() => {
+        deleteData(`/api/legmaterial/${id}`).then(() => {
             context.setProgress(100)
             context.setAlertBox({
                 open: true,
                 error: true,
-                msg: 'Category Deleted!'
+                msg: 'legmaterial Deleted!'
             })
-            fetchDataFromApi('/api/category').then(res => {
-                setCatData(res);
+            fetchDataFromApi('/api/legmaterial').then(res => {
+                setLegmaterialData(res);
             });
         }).catch(err => {
-            console.error("Error deleting category:", err);
+            console.error("Error deleting legmaterial:", err);
         });
     };
-
-    const handleChange = (event, value) => {
-        context.setProgress(40)
-        fetchDataFromApi(`/api/category?page=${value}`).then(res => {
-            setCatData(res)
-            context.setProgress(100)
-        });
-    }
 
     return (
         <>
@@ -110,13 +102,13 @@ const LegMaterial = () => {
                             </thead>
                             <tbody>
                                 {
-                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => {
+                                    legmaterialData?.legMaterials?.length !== 0 && legmaterialData?.legMaterials?.map((item, index) => {
                                         return (
                                             <tr key={index}>
                                                 <td>{item.name}</td>
                                                 <td>
                                                     <div className="actions d-flex align-items-center">
-                                                        <Button className="error" color="error" onClick={() => deleteCat(item._id)}><MdDelete /></Button>
+                                                        <Button className="error" color="error" onClick={() => deleteLegMat(item._id)}><MdDelete /></Button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -126,13 +118,6 @@ const LegMaterial = () => {
                                 }
                             </tbody>
                         </table>
-                        {
-                            catData?.totalPages > 1 &&
-                            <div className="d-flex tableFooter">
-                                <Pagination count={catData?.totalPages} color="primary" className="pagination"
-                                    showFirstButton showLastButton onChange={handleChange} />
-                            </div>
-                        }
                     </div>
                 </div>
             </div>

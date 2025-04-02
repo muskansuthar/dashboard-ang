@@ -1,10 +1,10 @@
-import { Breadcrumbs, Button, Chip } from "@mui/material";
+import { Breadcrumbs, Button, Chip, MenuItem, Select } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { emphasize, styled } from '@mui/material/styles';
 import { useContext, useEffect, useState } from "react";
 import { FaCloudUploadAlt, FaRegImages } from "react-icons/fa";
-import { deleteImages, postData } from "../../utils/api";
+import { deleteImages, fetchDataFromApi, postData } from "../../utils/api";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
 import { MyContext } from "../../App";
@@ -36,13 +36,13 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 const AddProductFinish = () => {
 
 
+    const [productVal, setProductVal] = useState('');
+    const [finishVal, setFinishVal] = useState('');
     const [isLoading, setIsLoading] = useState(false)
     const [formFields, setFormFields] = useState({
-        name: '',
+        finishId: '',
         images: [],
-        color: '',
-        slug: '',
-        parentId: ''
+        productId: ""
     });
 
     const [files, setFiles] = useState([])
@@ -50,6 +50,8 @@ const AddProductFinish = () => {
     const [previews, setPreviews] = useState([])
     const [originalUrls, setOriginalUrls] = useState([])
     const [isSelectedFiles, setIsSelectedFiles] = useState(false)
+    const [finishData, setFinishData] = useState([])
+    const [productData, setProductData] = useState([])
 
 
     //for claudinary images 
@@ -59,6 +61,17 @@ const AddProductFinish = () => {
 
     const context = useContext(MyContext)
     const formData = new FormData();
+
+    useEffect(() => {
+        window.scrollTo(0, 0)
+
+        fetchDataFromApi('/api/finish').then(res => {
+            setFinishData(res)
+        })
+        fetchDataFromApi('/api/products').then(res => {
+            setProductData(res)
+        })
+    }, [])
 
 
     // for upload imges in local folder with multer
@@ -81,16 +94,30 @@ const AddProductFinish = () => {
     }, [imgFiles])
 
 
+    const handleChangeProduct = (event) => {
+        setProductVal(event.target.value);
+        setFormFields(() => ({
+            ...formFields,
+            productId: event.target.value
+        }))
+    };
+    const handleChangeFinish = (event) => {
+        setFinishVal(event.target.value);
+        setFormFields(() => ({
+            ...formFields,
+            finishId: event.target.value
+        }))
+    };
 
-    const changeInput = (e) => {
-        setFormFields(() => (
-            {
-                ...formFields,
-                [e.target.name]: e.target.value
-            }
-        ))
+    // const changeInput = (e) => {
+    //     setFormFields(() => (
+    //         {
+    //             ...formFields,
+    //             [e.target.name]: e.target.value
+    //         }
+    //     ))
 
-    }
+    // }
 
     //for claudinary images 
     // let img_arr = []
@@ -145,6 +172,7 @@ const AddProductFinish = () => {
 
 
     // for upload imges in local folder with multer
+
     const onchangeFile = async (e, apiEndPoint) => {
         try {
             const imgArr = [];
@@ -187,13 +215,13 @@ const AddProductFinish = () => {
             const originalUrl = originalUrls[index];
 
             // Call the API to delete the image
-            deleteImages(`/api/category/deleteImage?img=${originalUrl}`).then((res) => {
+            deleteImages(`/api/productfinish/deleteImage?img=${originalUrl}`).then((res) => {
                 if (res.success) {
                     context.setAlertBox({
                         open: true,
                         error: false,
                         msg: "Image Deleted!",
-                    }); 
+                    });
 
                     const updatedOriginalUrls = originalUrls.filter((_, i) => i !== index);
                     const updatedpreviews = previews.filter((_, i) => i !== index);
@@ -218,27 +246,25 @@ const AddProductFinish = () => {
         }
     }
 
-    const addCategory = (e) => {
+    const addProductfinish = (e) => {
         e.preventDefault()
 
-        formFields.slug = formFields.name
-        formData.append('name', formFields.name)
-        formData.append('color', formFields.color)
-        formData.append('slug', formFields.slug)
+        formData.append('finishId', formFields.finishId)
+        formData.append('productId', formFields.productId)
 
 
-        if (formFields.name !== "" && formFields.color !== "" && isSelectedFiles !== false) {
+        if (formFields.finishId !== "" && formFields.productId !== "" && isSelectedFiles !== false) {
             setIsLoading(true)
 
-            postData('/api/category/create', formFields).then(res => {
+            postData('/api/productfinish/create', formFields).then(res => {
                 context.setAlertBox({
                     open: true,
-                    msg: 'The category is created!',
+                    msg: 'The productfinish is created!',
                     error: false
                 })
                 setIsLoading(false)
-                context.fetchCategory()
-                history('/category')
+                // context.fetchCategory()
+                history('/productfinish')
             })
         } else {
             context.setAlertBox({
@@ -277,52 +303,94 @@ const AddProductFinish = () => {
                     </Breadcrumbs>
                 </div>
 
-                <form className="form" onSubmit={addCategory}>
+                <form className="form" onSubmit={addProductfinish}>
                     <div className="row">
-                        <div className="col-sm-9">
+                        <div className="col-sm-12">
                             <div className="card p-4 mt-0">
-                                <div className="form-group">
-                                    <h6>Product Name</h6>
-                                    <input type="text" name="name" value={formFields.name} onChange={changeInput} />
-                                </div>
-                                <div className="form-group">
-                                    <h6>Product Finish Name</h6>
-                                    <input type="text" name="name" value={formFields.name} onChange={changeInput} />
-                                </div>
-                                <div className="card p-4 mt-0">
-                                    <div className="imagesUploadSec">
-                                        <h5 className="mb-4">Media And Pubblished</h5>
-
-                                        <div className="imgUploadBox d-flex align-items-center">
-
-                                            {
-                                                previews?.length !== 0 && previews?.map((img, index) => {
-                                                    return (
-                                                        <div className="uploadBox" key={index}>
-                                                            <spna className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></spna>
-                                                            <img src={img} className="w-100" alt="" />
-                                                        </div>
-                                                    )
-                                                })
-                                            }
-
-                                            <div className="uploadBox">
-                                                <input type="file" multiple onChange={(e) => onchangeFile(e, '/api/category/upload')} name="images" />
-                                                <div className="info">
-                                                    <FaRegImages />
-                                                    <h5>image upload</h5>
-                                                </div>
-                                            </div>
+                                <h5 className="mb-4">Basic Information</h5>
+                                <div className="row">
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>PRODUCT NAME</h6>
+                                            <Select
+                                                value={productVal}
+                                                onChange={handleChangeProduct}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                {
+                                                    productData?.products?.length !== 0 && productData?.products?.map((item, index) => {
+                                                        return (
+                                                            <MenuItem className="text-capitalize" value={item._id} key={index}>{item.name}</MenuItem>
+                                                        )
+                                                    })
+                                                } 
+                                            </Select>
                                         </div>
-
-                                        <br />
-
-                                        <Button type="submit" className="btn-blue btn-lg btn-big w-100"><FaCloudUploadAlt /> &nbsp;{isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'}</Button>
                                     </div>
-
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>PRODUCT FINISH NAME</h6>
+                                            <Select
+                                                value={finishVal}
+                                                onChange={handleChangeFinish}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                {
+                                                    finishData?.finishes?.length !== 0 && finishData?.finishes?.map((item, index) => {
+                                                        return (
+                                                            <MenuItem className="text-capitalize" value={item._id} key={index} >{item.name}</MenuItem>
+                                                        )
+                                                    })
+                                                }
+                                            </Select>
+                                        </div>
+                                    </div>
                                 </div>
+
                             </div>
                         </div>
+                    </div>
+                    <div className="card p-4 mt-0">
+                        <div className="imagesUploadSec">
+                            <h5 className="mb-4">Media And Pubblished</h5>
+
+                            <div className="imgUploadBox d-flex align-items-center">
+
+                                {
+                                    previews?.length !== 0 && previews?.map((img, index) => {
+                                        return (
+                                            <div className="uploadBox" key={index}>
+                                                <spna className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></spna>
+                                                <img src={img} className="w-100" alt="" />
+                                            </div>
+                                        )
+                                    })
+                                }
+
+                                <div className="uploadBox">
+                                    <input type="file" multiple onChange={(e) => onchangeFile(e, '/api/productfinish/upload')} name="images" />
+                                    <div className="info">
+                                        <FaRegImages />
+                                        <h5>image upload</h5>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br />
+
+                            <Button type="submit" className="btn-blue btn-lg btn-big w-100"><FaCloudUploadAlt /> &nbsp;{isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'}</Button>
+                        </div>
+
                     </div>
                 </form>
             </div>

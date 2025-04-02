@@ -33,7 +33,7 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 
 const Top = () => {
 
-    const [catData, setCatData] = useState([])
+    const [topData, setTopData] = useState([])
 
     const context = useContext(MyContext)
 
@@ -42,37 +42,29 @@ const Top = () => {
 
         context.setProgress(20)
 
-        fetchDataFromApi('/api/category').then(res => {
-            setCatData(res)
+        fetchDataFromApi('/api/top').then(res => {
+            setTopData(res)
             context.setProgress(100)
         })
     }, [])
 
 
-    const deleteCat = (id) => {
+    const deleteTop = (id) => {
         context.setProgress(40)
-        deleteData(`/api/category/${id}`).then(() => {
+        deleteData(`/api/top/${id}`).then(() => {
             context.setProgress(100)
             context.setAlertBox({
                 open: true,
                 error: true,
-                msg: 'Category Deleted!'
+                msg: 'top Deleted!'
             })
-            fetchDataFromApi('/api/category').then(res => {
-                setCatData(res);
+            fetchDataFromApi('/api/top').then(res => {
+                setTopData(res);
             });
         }).catch(err => {
-            console.error("Error deleting category:", err);
+            console.error("Error deleting top:", err);
         });
     };
-
-    const handleChange = (event, value) => {
-        context.setProgress(40)
-        fetchDataFromApi(`/api/category?page=${value}`).then(res => {
-            setCatData(res)
-            context.setProgress(100)
-        });
-    }
 
     return (
         <>
@@ -110,13 +102,13 @@ const Top = () => {
                             </thead>
                             <tbody>
                                 {
-                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => {
+                                    topData?.tops?.length !== 0 && topData?.tops?.map((item, index) => {
                                         return (
                                             <tr key={index}>
                                                 <td>{item.name}</td>
                                                 <td>
                                                     <div className="actions d-flex align-items-center">
-                                                        <Button className="error" color="error" onClick={() => deleteCat(item._id)}><MdDelete /></Button>
+                                                        <Button className="error" color="error" onClick={() => deleteTop(item._id)}><MdDelete /></Button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -126,13 +118,6 @@ const Top = () => {
                                 }
                             </tbody>
                         </table>
-                        {
-                            catData?.totalPages > 1 &&
-                            <div className="d-flex tableFooter">
-                                <Pagination count={catData?.totalPages} color="primary" className="pagination"
-                                    showFirstButton showLastButton onChange={handleChange} />
-                            </div>
-                        }
                     </div>
                 </div>
             </div>

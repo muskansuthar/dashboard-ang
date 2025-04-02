@@ -39,10 +39,8 @@ const AddCategory = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [formFields, setFormFields] = useState({
         name: '',
-        images: [],
-        color: '',
         slug: '',
-        parentId: ''
+        images: []
     });
 
     const [files, setFiles] = useState([])
@@ -221,13 +219,11 @@ const AddCategory = () => {
     const addCategory = (e) => {
         e.preventDefault()
 
-        formFields.slug = formFields.name
         formData.append('name', formFields.name)
-        formData.append('color', formFields.color)
         formData.append('slug', formFields.slug)
 
 
-        if (formFields.name !== "" && formFields.color !== "" && isSelectedFiles !== false) {
+        if (formFields.name !== "" && formFields.slug !== "" && isSelectedFiles !== false) {
             setIsLoading(true)
 
             postData('/api/category/create', formFields).then(res => {
@@ -286,8 +282,8 @@ const AddCategory = () => {
                                     <input type="text" name="name" value={formFields.name} onChange={changeInput} />
                                 </div>
                                 <div className="form-group">
-                                    <h6>Color</h6>
-                                    <input type="text" name="color" value={formFields.color} onChange={changeInput} />
+                                    <h6>Category Slug</h6>
+                                    <input type="text" name="slug" value={formFields.slug} onChange={changeInput} />
                                 </div>
                                 <div className="card p-4 mt-0">
                                     <div className="imagesUploadSec">

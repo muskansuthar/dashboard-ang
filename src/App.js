@@ -9,17 +9,14 @@ import { createContext, useEffect, useState, useRef } from 'react';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Products from './pages/Products';
-import ProductDetails from './pages/ProductDetails';
 import ProductUpload from './pages/Products/addProduct';
 import Category from './pages/Category/categoryList';
 import AddCategory from './pages/Category/addCategory';
-import EditCategory from './pages/Category/editCategory';
 
 import { Snackbar, Alert } from '@mui/material';
 import LoadingBar from 'react-top-loading-bar'
 import EditProduct from './pages/Products/editProduct';
 import { fetchDataFromApi } from './utils/api';
-import axios from "axios";
 import TopMaterial from './pages/TopMaterial/topMaterialList';
 import AddTopMaterial from './pages/TopMaterial/addTopMaterial';
 import AddTopFinish from './pages/TopFinish/addTopFinish';
@@ -35,13 +32,10 @@ import AddFinish from './pages/Finish/addFinish';
 import AddEdge from './pages/Edge/addEdge';
 import Edge from './pages/Edge/edgeList';
 import AddProductTops from './pages/ProductTops/addProductTops';
-import EditProductTop from './pages/ProductTops/editProductTops';
 import ProductTops from './pages/ProductTops/productTopsList';
 import AddProductEdges from './pages/ProductEdges/addProductEdges';
-import EditProductEdges from './pages/ProductEdges/editProductEdges';
 import ProductEdges from './pages/ProductEdges/productEdgesList';
 import AddProductFinish from './pages/ProductFinishes/addProductFinish';
-import EditProductFinish from './pages/ProductFinishes/editProductFinish';
 import ProductFinish from './pages/ProductFinishes/productFinishList';
 
 
@@ -49,8 +43,6 @@ const MyContext = createContext()
 
 function App() {
 
-  const [countryList, setCountryList] = useState([])
-  const [selectedCountry, setselectedCountry] = useState('')
   const [isToggleSidebar, setIsToggleSidebar] = useState(false)
   const [isLogin, setIsLogin] = useState(true)
   const [isHideSidebarAndHeader, setisHideSidebarAndHeader] = useState(false)
@@ -74,11 +66,6 @@ function App() {
     error: false,
     open: false
   })
-
-
-  useEffect(() => {
-    getCountry("https://countriesnow.space/api/v0.1/countries/")
-  }, [])
 
   useEffect(() => {
 
@@ -129,12 +116,6 @@ function App() {
     fetchCategory()
   }, [])
 
-  const getCountry = async (url) => {
-    await axios.get(url).then((res) => {
-      setCountryList(res.data.data);
-    });
-  }
-
   const fetchCategory = () => {
     fetchDataFromApi('/api/category').then(res => {
       setCatData(res)
@@ -154,7 +135,6 @@ function App() {
       open: false,
     })
   }
-
 
   const values = {
     isToggleSidebar,
@@ -177,10 +157,7 @@ function App() {
     catData,
     fetchCategory,
     setUser,
-    user,
-    countryList,
-    setselectedCountry,
-    selectedCountry
+    user
   }
 
   return (
@@ -228,13 +205,11 @@ function App() {
               <Route path='/login' exact={true} element={<Login />} />
               <Route path='/signUp' exact={true} element={<SignUp />} />
               <Route path='/products' exact={true} element={<Products />} />
-              <Route path='/product/details/:id' exact={true} element={<ProductDetails />} />
               <Route path='/product/details' exact={true} element={<Products />} />
               <Route path='/product/upload' exact={true} element={<ProductUpload />} />
               <Route path='/product/edit/:id' exact={true} element={<EditProduct />} />
               <Route path='/category' exact={true} element={<Category />} />
               <Route path='/category/add' exact={true} element={<AddCategory />} />
-              <Route path='/category/edit/:id' exact={true} element={<EditCategory />} />
               <Route path='/legFinish' exact={true} element={<LegFinish />} />
               <Route path='/legFinish/add' exact={true} element={<AddLegFinish />} />
               <Route path='/legMaterial' exact={true} element={<LegMaterial />} />
@@ -251,13 +226,10 @@ function App() {
               <Route path='/finish/add' exact={true} element={<AddFinish />} />
               <Route path='/productTop' exact={true} element={<ProductTops />} />
               <Route path='/productTop/add' exact={true} element={<AddProductTops />} />
-              <Route path='/productTop/edit/:id' exact={true} element={<EditProductTop />} />
               <Route path='/productEdge' exact={true} element={<ProductEdges />} />
               <Route path='/productEdge/add' exact={true} element={<AddProductEdges />} />
-              <Route path='/productEdge/edit/:id' exact={true} element={<EditProductEdges />} />
               <Route path='/productFinish' exact={true} element={<ProductFinish />} />
               <Route path='/productFinish/add' exact={true} element={<AddProductFinish />} />
-              <Route path='/productFinish/edit/:id' exact={true} element={<EditProductFinish />} />
             </Routes>
           </div>
         </div>

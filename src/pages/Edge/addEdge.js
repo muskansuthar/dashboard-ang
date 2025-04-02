@@ -36,11 +36,7 @@ const AddEdge = () => {
 
     const [isLoading, setIsLoading] = useState(false)
     const [formFields, setFormFields] = useState({
-        name: '',
-        images: [],
-        color: '',
-        slug: '',
-        parentId: ''
+        name: ''
     });
 
     const history = useNavigate();
@@ -59,27 +55,24 @@ const AddEdge = () => {
 
     }
 
-    const addCategory = (e) => {
+    const addEdge = (e) => {
         e.preventDefault()
 
-        formFields.slug = formFields.name
         formData.append('name', formFields.name)
-        formData.append('color', formFields.color)
-        formData.append('slug', formFields.slug)
 
 
-        if (formFields.name !== "" && formFields.color !== "") {
+        if (formFields.name !== "") {
             setIsLoading(true)
 
-            postData('/api/category/create', formFields).then(res => {
+            postData('/api/edge/create', formFields).then(res => {
                 context.setAlertBox({
                     open: true,
-                    msg: 'The category is created!',
+                    msg: 'The edge is created!',
                     error: false
                 })
                 setIsLoading(false)
-                context.fetchCategory()
-                history('/category')
+                // context.fetchCategory()
+                history('/edge')
             })
         } else {
             context.setAlertBox({
@@ -118,7 +111,7 @@ const AddEdge = () => {
                     </Breadcrumbs>
                 </div>
 
-                <form className="form" onSubmit={addCategory}>
+                <form className="form" onSubmit={addEdge}>
                     <div className="row">
                         <div className="col-sm-9">
                             <div className="card p-4 mt-0">

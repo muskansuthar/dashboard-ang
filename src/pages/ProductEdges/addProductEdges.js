@@ -1,14 +1,14 @@
-import { Breadcrumbs, Button, Chip } from "@mui/material";
+import { Breadcrumbs, Button, Chip, MenuItem, Select } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { emphasize, styled } from '@mui/material/styles';
 import { useContext, useEffect, useState } from "react";
 import { FaCloudUploadAlt, FaRegImages } from "react-icons/fa";
-import { deleteImages, postData } from "../../utils/api";
+import { deleteImages, fetchDataFromApi, postData } from "../../utils/api";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
 import { MyContext } from "../../App";
-import { IoCloseSharp } from "react-icons/io5";
+import { IoCloseSharp } from "react-icons/io5"; 
 
 
 //breadcrump code
@@ -36,13 +36,13 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 const AddProductEdges = () => {
 
 
+    const [productVal, setProductVal] = useState('');
+    const [edgeVal, setEdgeVal] = useState('');
     const [isLoading, setIsLoading] = useState(false)
     const [formFields, setFormFields] = useState({
-        name: '',
+        edgeId: '',
         images: [],
-        color: '',
-        slug: '',
-        parentId: ''
+        productId:""
     });
 
     const [files, setFiles] = useState([])
@@ -50,6 +50,8 @@ const AddProductEdges = () => {
     const [previews, setPreviews] = useState([])
     const [originalUrls, setOriginalUrls] = useState([])
     const [isSelectedFiles, setIsSelectedFiles] = useState(false)
+    const [edgeData, setEdgeData] = useState([])
+    const [productData, setProductData] = useState([])
 
 
     //for claudinary images 
@@ -60,6 +62,16 @@ const AddProductEdges = () => {
     const context = useContext(MyContext)
     const formData = new FormData();
 
+    useEffect(() => {
+        window.scrollTo(0, 0)
+
+        fetchDataFromApi('/api/edge').then(res => {
+            setEdgeData(res)
+        })
+        fetchDataFromApi('/api/products').then(res => {
+            setProductData(res)
+        })
+    }, [])
 
     // for upload imges in local folder with multer
     useEffect(() => {
@@ -80,17 +92,31 @@ const AddProductEdges = () => {
         }
     }, [imgFiles])
 
+    const handleChangeProduct = (event) => {
+        setProductVal(event.target.value);
+        setFormFields(() => ({
+            ...formFields,
+            productId: event.target.value
+        }))
+    };
+    const handleChangeEdge = (event) => {
+        setEdgeVal(event.target.value);
+        setFormFields(() => ({
+            ...formFields,
+            edgeId: event.target.value
+        }))
+    };
 
 
-    const changeInput = (e) => {
-        setFormFields(() => (
-            {
-                ...formFields,
-                [e.target.name]: e.target.value
-            }
-        ))
+    // const changeInput = (e) => {
+    //     setFormFields(() => (
+    //         {
+    //             ...formFields,
+    //             [e.target.name]: e.target.value
+    //         }
+    //     ))
 
-    }
+    // }
 
     //for claudinary images 
     // let img_arr = []
@@ -145,6 +171,7 @@ const AddProductEdges = () => {
 
 
     // for upload imges in local folder with multer
+   
     const onchangeFile = async (e, apiEndPoint) => {
         try {
             const imgArr = [];
@@ -187,7 +214,7 @@ const AddProductEdges = () => {
             const originalUrl = originalUrls[index];
 
             // Call the API to delete the image
-            deleteImages(`/api/category/deleteImage?img=${originalUrl}`).then((res) => {
+            deleteImages(`/api/productedge/deleteImage?img=${originalUrl}`).then((res) => {
                 if (res.success) {
                     context.setAlertBox({
                         open: true,
@@ -218,27 +245,24 @@ const AddProductEdges = () => {
         }
     }
 
-    const addCategory = (e) => {
+    const addProductedge = (e) => {
         e.preventDefault()
 
-        formFields.slug = formFields.name
-        formData.append('name', formFields.name)
-        formData.append('color', formFields.color)
-        formData.append('slug', formFields.slug)
+        formData.append('edgeId', formFields.edgeId)
+        formData.append('productId', formFields.productId)
 
 
-        if (formFields.name !== "" && formFields.color !== "" && isSelectedFiles !== false) {
+        if (formFields.edgeId !== "" && formFields.productId !== "" && isSelectedFiles !== false) {
             setIsLoading(true)
 
-            postData('/api/category/create', formFields).then(res => {
+            postData('/api/productedge/create', formFields).then(res => {
                 context.setAlertBox({
                     open: true,
-                    msg: 'The category is created!',
+                    msg: 'The productedge is created!',
                     error: false
                 })
                 setIsLoading(false)
-                context.fetchCategory()
-                history('/category')
+                history('/productedge')
             })
         } else {
             context.setAlertBox({
@@ -277,18 +301,63 @@ const AddProductEdges = () => {
                     </Breadcrumbs>
                 </div>
 
-                <form className="form" onSubmit={addCategory}>
+                <form className="form" onSubmit={addProductedge}>
                     <div className="row">
-                        <div className="col-sm-9">
+                    <div className="col-sm-12">
                             <div className="card p-4 mt-0">
-                                <div className="form-group">
-                                    <h6>Product Name</h6>
-                                    <input type="text" name="name" value={formFields.name} onChange={changeInput} />
+                            <h5 className="mb-4">Basic Information</h5>
+                            <div className="row">
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>PRODUCT NAME</h6>
+                                            <Select
+                                                value={productVal}
+                                                onChange={handleChangeProduct}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                {
+                                                    productData?.products?.length !== 0 && productData?.products?.map((item, index) => {
+                                                        return (
+                                                            <MenuItem className="text-capitalize" value={item._id} key={index}>{item.name}</MenuItem>
+                                                        )
+                                                    })
+                                                }
+                                            </Select>
+                                        </div>
+                                    </div>
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>PRODUCT EDGE NAME</h6>
+                                            <Select
+                                                value={edgeVal}
+                                                onChange={handleChangeEdge}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                {
+                                                    edgeData?.edges?.length !== 0 && edgeData?.edges?.map((item, index) => {
+                                                        return (
+                                                            <MenuItem className="text-capitalize" value={item._id} key={index} >{item.name}</MenuItem>
+                                                        )
+                                                    })
+                                                }
+                                            </Select>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <h6>Product Edge Name</h6>
-                                    <input type="text" name="name" value={formFields.name} onChange={changeInput} />
-                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                                 <div className="card p-4 mt-0">
                                     <div className="imagesUploadSec">
                                         <h5 className="mb-4">Media And Pubblished</h5>
@@ -307,7 +376,7 @@ const AddProductEdges = () => {
                                             }
 
                                             <div className="uploadBox">
-                                                <input type="file" multiple onChange={(e) => onchangeFile(e, '/api/category/upload')} name="images" />
+                                                <input type="file" multiple onChange={(e) => onchangeFile(e, '/api/productedge/upload')} name="images" />
                                                 <div className="info">
                                                     <FaRegImages />
                                                     <h5>image upload</h5>
@@ -321,9 +390,6 @@ const AddProductEdges = () => {
                                     </div>
 
                                 </div>
-                            </div>
-                        </div>
-                    </div>
                 </form>
             </div>
         </>

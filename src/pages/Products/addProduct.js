@@ -47,43 +47,39 @@ const MenuProps = {
 const ProductUpload = () => {
 
     const [categoryVal, setcategoryVal] = useState('');
-    const [subCatVal, setSubCatVal] = useState('');
+    const [legfinishVal, setLegfinishVal] = useState('');
+    const [legmaterialVal, setLegmaterialVal] = useState('');
+    const [topmaterialVal, setTopmaterialVal] = useState('');
+    const [topfinishVal, setTopfinishVal] = useState('');
     const [isFeaturedValue, setIsFeaturedValue] = useState('');
-    const [productRams, setProductRams] = useState([]);
-    const [productSize, setProductSize] = useState([]);
-    const [productWeight, setProductWeight] = useState([]);
     const [catData, setCatData] = useState([])
-    const [subCatData, setSubCatData] = useState([])
     const [productImagesArr, setproductImagesArr] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [files, setFiles] = useState([])
     const [imgFiles, setimgFiles] = useState([])
     const [previews, setPreviews] = useState([])
     const [originalUrls, setOriginalUrls] = useState([])
-    const [productRAMSData, setProductRAMSData] = useState([])
-    const [productWEIGHTData, setProductWEIGHTData] = useState([])
-    const [productSIZEData, setProductSIZEData] = useState([])
     const [isSelectedFiles, setIsSelectedFiles] = useState(false)
+
+    const [legfinishData, setLegfinishData] = useState([])
+    const [legmaterialData, setLegmaterialData] = useState([])
+    const [topfinishData, setTopfinishData] = useState([])
+    const [topmaterialData, setTopmaterialData] = useState([])
 
     const [formFields, setFormFields] = useState({
         name: '',
         description: '',
-        brand: '',
         price: null,
-        oldPrice: null,
-        catName: '',
-        subCatId: '',
-        subCatName: '',
         category: '',
-        subCat: '',
-        countInStock: null,
-        rating: 0,
+        legfinish: '',
+        legmaterial: '',
+        topfinish: '',
+        topmaterial: '',
+        height: '',
+        width: '',
+        length: '',
+        weight: '',
         isFeatured: null,
-        discount: null,
-        productRam: [],
-        productSize: [],
-        productWeight: [],
-        location: ''
     });
 
     const history = useNavigate();
@@ -96,34 +92,23 @@ const ProductUpload = () => {
     useEffect(() => {
         window.scrollTo(0, 0)
         setCatData(context.catData)
-    }, [])
-
-    useEffect(() => {
-        const subCatArr = []
-
-        context.catData?.categoryList?.length !== 0 && context.catData?.categoryList?.map((cat, index) => {
-            if (cat?.children?.length !== 0) {
-                cat?.children?.map((subCat) => {
-                    subCatArr.push(subCat)
-                })
-            }
-        })
-
-        setSubCatData(subCatArr)
     }, [context.catData])
 
     useEffect(() => {
         window.scrollTo(0, 0)
 
-        fetchDataFromApi("/api/productRAMS").then((res) => {
-            setProductRAMSData(res)
+        fetchDataFromApi('/api/legfinish').then(res => {
+            setLegfinishData(res)
         })
-        fetchDataFromApi("/api/productWeight").then((res) => {
-            setProductWEIGHTData(res)
+        fetchDataFromApi('/api/legmaterial').then(res => {
+            setLegmaterialData(res)
         })
-        fetchDataFromApi("/api/productSize").then((res) => {
-            setProductSIZEData(res)
+        fetchDataFromApi('/api/topfinish').then(res => {
+            setTopfinishData(res)
         })
+        fetchDataFromApi('/api/topmaterial').then(res => {
+            setTopmaterialData(res);
+        });
     }, [])
 
     useEffect(() => {
@@ -144,10 +129,6 @@ const ProductUpload = () => {
         }
     }, [imgFiles])
 
-    useEffect(() => {
-        formFields.location = context.selectedCountry
-    }, [context.selectedCountry])
-
     const handleChangeCategory = (event) => {
         setcategoryVal(event.target.value);
         setFormFields(() => ({
@@ -155,9 +136,33 @@ const ProductUpload = () => {
             category: event.target.value
         }))
     };
-
-    const handleChangeSubCategory = (event) => {
-        setSubCatVal(event.target.value);
+    const handleChangeLegfinish = (event) => {
+        setLegfinishVal(event.target.value);
+        setFormFields(() => ({
+            ...formFields,
+            legfinish: event.target.value
+        }))
+    };
+    const handleChangeLegmaterial = (event) => {
+        setLegmaterialVal(event.target.value);
+        setFormFields(() => ({
+            ...formFields,
+            legmaterial: event.target.value
+        }))
+    };
+    const handleChangeTopfinish = (event) => {
+        setTopfinishVal(event.target.value);
+        setFormFields(() => ({
+            ...formFields,
+            topfinish: event.target.value
+        }))
+    };
+    const handleChangeTopmaterial = (event) => {
+        setTopmaterialVal(event.target.value);
+        setFormFields(() => ({
+            ...formFields,
+            topmaterial: event.target.value
+        }))
     };
 
     const handleChangeisFeaturedValue = (event) => {
@@ -167,54 +172,6 @@ const ProductUpload = () => {
             isFeatured: event.target.value
         }))
     };
-    const handleChangeProductRams = (event) => {
-        // setProductRams(event.target.value);
-        // setFormFields(() => ({
-        //     ...formFields,
-        //     productRam: event.target.value
-        // }))
-
-        const {
-            target: { value },
-        } = event;
-        setProductRams(
-            typeof value === 'string' ? value.split(',') : value,
-        )
-
-        formFields.productRam = value
-    };
-    const handleChangeisProductSize = (event) => {
-        // setProductSize(event.target.value);
-        // setFormFields(() => ({
-        //     ...formFields,
-        //     productSize: event.target.value
-        // }))
-
-        const {
-            target: { value },
-        } = event;
-        setProductSize(
-            typeof value === 'string' ? value.split(',') : value,
-        )
-
-        formFields.productSize = value
-    };
-    const handleChangeisProductWeight = (event) => {
-        // setProductWeight(event.target.value);
-        // setFormFields(() => ({
-        //     ...formFields,
-        //     productWeight: event.target.value
-        // }))
-
-        const {
-            target: { value },
-        } = event;
-        setProductWeight(
-            typeof value === 'string' ? value.split(',') : value,
-        )
-
-        formFields.productWeight = value
-    };
 
     const inputChange = (e) => {
         setFormFields(() => ({
@@ -223,18 +180,10 @@ const ProductUpload = () => {
         }))
     }
 
-    const selectCat = (cat, id) => {
-        formFields.catName = cat;
-        formFields.catId = id
-    }
-
-    const selectSubCat = (subCat, id) => {
-        setFormFields(() => ({
-            ...formFields,
-            subCat: subCat,
-            subCatId: id
-        }))
-    }
+    // const selectCat = (cat, id) => {
+    //     formFields.catName = cat;
+    //     formFields.catId = id
+    // }
 
     const onchangeFile = async (e, apiEndPoint) => {
         try {
@@ -316,21 +265,17 @@ const ProductUpload = () => {
 
         formData.append('name', formFields.name)
         formData.append('description', formFields.description)
-        formData.append('brand', formFields.brand)
         formData.append('price', formFields.price)
-        formData.append('oldPrice', formFields.oldPrice)
-        formData.append('catName', formFields.catName)
-        formData.append('subCatId', formFields.subCatId)
         formData.append('category', formFields.category)
-        formData.append('subCat', formFields.subCat)
-        formData.append('countInStock', formFields.countInStock)
-        formData.append('rating', formFields.rating)
+        formData.append('legfinish', formFields.legfinish)
+        formData.append('legmaterial', formFields.legmaterial)
+        formData.append('topfinish', formFields.topfinish)
+        formData.append('topmaterial', formFields.topmaterial)
+        formData.append('weight', formFields.weight)
+        formData.append('height', formFields.height)
+        formData.append('length', formFields.length)
+        formData.append('width', formFields.width)
         formData.append('isFeatured', formFields.isFeatured)
-        formData.append('discount', formFields.discount)
-        formData.append('productRam', formFields.productRam)
-        formData.append('productSize', formFields.productSize)
-        formData.append('productWeight', formFields.productWeight)
-        formData.append('location', formFields.location)
 
         if (formFields.name === "") {
             context.setAlertBox({
@@ -348,26 +293,10 @@ const ProductUpload = () => {
             })
             return false;
         }
-        if (formFields.brand === "") {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product brand',
-                error: true
-            })
-            return false;
-        }
         if (formFields.price === null) {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product price',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.oldPrice === null) {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product oldPrice',
                 error: true
             })
             return false;
@@ -380,42 +309,74 @@ const ProductUpload = () => {
             })
             return false;
         }
-        if (formFields.subCat === "") {
+        if (formFields.legfinish === "") {
             context.setAlertBox({
                 open: true,
-                msg: 'please select product sub category',
+                msg: 'please add product legfinish',
                 error: true
             })
             return false;
         }
-        if (formFields.countInStock === null) {
+        if (formFields.legmaterial === "") {
             context.setAlertBox({
                 open: true,
-                msg: 'please add product count in Stock',
+                msg: 'please add product legmaterial',
                 error: true
             })
             return false;
         }
-        if (formFields.rating === 0) {
-            context.setAlertBox({
-                open: true,
-                msg: 'please select product rating',
-                error: true
-            })
-            return false;
-        }
+        // if (formFields.topfinish === "") {
+        //     context.setAlertBox({
+        //         open: true,
+        //         msg: 'please add product topfinish',
+        //         error: true
+        //     })
+        //     return false;
+        // }
+        // if (formFields.topmaterial === "") {
+        //     context.setAlertBox({
+        //         open: true,
+        //         msg: 'please add product topmaterial',
+        //         error: true
+        //     })
+        //     return false;
+        // }
+        // if (formFields.height === "") {
+        //     context.setAlertBox({
+        //         open: true,
+        //         msg: 'please add product height',
+        //         error: true
+        //     })
+        //     return false;
+        // }
+        // if (formFields.length === "") {
+        //     context.setAlertBox({
+        //         open: true,
+        //         msg: 'please add product length',
+        //         error: true
+        //     })
+        //     return false;
+        // }
+        // if (formFields.width === "") {
+        //     context.setAlertBox({
+        //         open: true,
+        //         msg: 'please add product width',
+        //         error: true
+        //     })
+        //     return false;
+        // }
+        // if (formFields.weight === "") {
+        //     context.setAlertBox({
+        //         open: true,
+        //         msg: 'please add product weight',
+        //         error: true
+        //     })
+        //     return false;
+        // }
         if (formFields.isFeatured === null) {
             context.setAlertBox({
                 open: true,
                 msg: 'please select product is a featured or not',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.discount === null) {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product discount',
                 error: true
             })
             return false;
@@ -486,6 +447,42 @@ const ProductUpload = () => {
                                     <textarea rows={5} cols={10} name="description" value={formFields.description} onChange={inputChange} />
                                 </div>
 
+
+                                <div className="row">
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>PRICE</h6>
+                                            <input type="text" name="price" value={formFields.price} onChange={inputChange} />
+                                        </div>
+                                    </div>
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>WEIGHT</h6>
+                                            <input type="text" name="weight" value={formFields.weight} onChange={inputChange} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>WIDTH</h6>
+                                            <input type="text" name="width" value={formFields.width} onChange={inputChange} />
+                                        </div>
+                                    </div>
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>LENGTH</h6>
+                                            <input type="text" name="length" value={formFields.length} onChange={inputChange} />
+                                        </div>
+                                    </div>
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>HEIGHT</h6>
+                                            <input type="text" name="height" value={formFields.height} onChange={inputChange} />
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="row">
                                     <div className="col">
                                         <div className="form-group">
@@ -503,7 +500,7 @@ const ProductUpload = () => {
                                                 {
                                                     catData?.categoryList?.length !== 0 && catData?.categoryList?.map((cat, index) => {
                                                         return (
-                                                            <MenuItem className="text-capitalize" value={cat._id} key={index} onClick={() => selectCat(cat.name)}>{cat.name}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={cat._id} key={index}>{cat.name}</MenuItem>
                                                         )
                                                     })
                                                 }
@@ -512,10 +509,10 @@ const ProductUpload = () => {
                                     </div>
                                     <div className="col">
                                         <div className="form-group">
-                                            <h6>SUB CATEGORY</h6>
+                                            <h6>TOP FINISH</h6>
                                             <Select
-                                                value={subCatVal}
-                                                onChange={handleChangeSubCategory}
+                                                value={topfinishVal}
+                                                onChange={handleChangeTopfinish}
                                                 displayEmpty
                                                 inputProps={{ 'aria-label': 'Without label' }}
                                                 className="w-100"
@@ -524,9 +521,32 @@ const ProductUpload = () => {
                                                     <em value={null}>None</em>
                                                 </MenuItem>
                                                 {
-                                                    subCatData?.length !== 0 && subCatData?.map((subCat, index) => {
+                                                    topfinishData?.topFinishes?.length !== 0 && topfinishData?.topFinishes?.map((item, index) => {
                                                         return (
-                                                            <MenuItem className="text-capitalize" value={subCat._id} key={index} onClick={() => selectSubCat(subCat.name, subCat._id)}>{subCat.name}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={item._id} key={index} >{item.name}</MenuItem>
+                                                        )
+                                                    })
+                                                }
+                                            </Select>
+                                        </div>
+                                    </div>
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>TOP MATERIAL</h6>
+                                            <Select
+                                                value={topmaterialVal}
+                                                onChange={handleChangeTopmaterial}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                {
+                                                    topmaterialData?.topMaterials?.length !== 0 && topmaterialData?.topMaterials?.map((item, index) => {
+                                                        return (
+                                                            <MenuItem className="text-capitalize" value={item._id} key={index}>{item.name}</MenuItem>
                                                         )
                                                     })
                                                 }
@@ -534,29 +554,55 @@ const ProductUpload = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="row">
-                                    <div className="col">
-                                        <div className="form-group">
-                                            <h6>PRICE</h6>
-                                            <input type="text" name="price" value={formFields.price} onChange={inputChange} />
-                                        </div>
-                                    </div>
-                                    <div className="col">
-                                        <div className="form-group">
-                                            <h6>OLD PRICE</h6>
-                                            <input type="text" name="oldPrice" value={formFields.oldPrice} onChange={inputChange} />
-                                        </div>
-                                    </div>
-                                    <div className="col">
-                                        <div className="form-group">
-                                            <h6>PRODUCT STOCK</h6>
-                                            <input type="text" name="countInStock" value={formFields.countInStock} onChange={inputChange} />
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <div className="row">
-                                    <div className="col-md-4">
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>LEG FINISH</h6>
+                                            <Select
+                                                value={legfinishVal}
+                                                onChange={handleChangeLegfinish}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                {
+                                                    legfinishData?.legFinishes?.length !== 0 && legfinishData?.legFinishes?.map((item, index) => {
+                                                        return (
+                                                            <MenuItem className="text-capitalize" value={item._id} key={index}>{item.name}</MenuItem>
+                                                        )
+                                                    })
+                                                }
+                                            </Select>
+                                        </div>
+                                    </div>
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>LEG MATERIAL</h6>
+                                            <Select
+                                                value={legmaterialVal}
+                                                onChange={handleChangeLegmaterial}
+                                                displayEmpty
+                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                className="w-100"
+                                            >
+                                                <MenuItem value="">
+                                                    <em value={null}>None</em>
+                                                </MenuItem>
+                                                {
+                                                    legmaterialData?.legMaterials?.length !== 0 && legmaterialData?.legMaterials?.map((item, index) => {
+                                                        return (
+                                                            <MenuItem className="text-capitalize" value={item._id} key={index}>{item.name}</MenuItem>
+                                                        )
+                                                    })
+                                                }
+                                            </Select>
+                                        </div>
+                                    </div>
+                                    <div className="col">
                                         <div className="form-group">
                                             <h6 className="text-uppercase">is Featured</h6>
                                             <Select

@@ -69,13 +69,13 @@ const Category = () => {
         });
     };
 
-    const handleChange = (event, value) => {
-        context.setProgress(40)
-        fetchDataFromApi(`/api/category?page=${value}`).then(res => {
-            setCatData(res)
-            context.setProgress(100)
-        });
-    }
+    // const handleChange = (event, value) => {
+    //     context.setProgress(40)
+    //     fetchDataFromApi(`/api/category?page=${value}`).then(res => {
+    //         setCatData(res)
+    //         context.setProgress(100)
+    //     });
+    // }
 
     return (
         <>
@@ -109,7 +109,7 @@ const Category = () => {
                                 <tr>
                                     <th style={{ width: '100px' }}>IMAGE</th>
                                     <th>CATEGORY</th>
-                                    <th>COLOR</th>
+                                    <th>SLUG</th>
                                     <th>ACTION</th>
                                 </tr>
                             </thead>
@@ -128,12 +128,12 @@ const Category = () => {
                                                     </div>
                                                 </td>
                                                 <td>{item.name}</td>
-                                                <td>{item.color}</td>
+                                                <td>{item.slug}</td>
                                                 <td>
                                                     <div className="actions d-flex align-items-center">
-                                                        <Link to={`/category/edit/${item._id}`}>
+                                                        {/* <Link to={`/category/edit/${item._id}`}>
                                                             <Button className="success" color="success"><FaPencilAlt /></Button>
-                                                        </Link>
+                                                        </Link> */}
                                                         <Button className="error" color="error" onClick={() => deleteCat(item._id)}><MdDelete /></Button>
                                                     </div>
                                                 </td>
@@ -144,13 +144,13 @@ const Category = () => {
                                 }
                             </tbody>
                         </table>
-                        {
+                        {/* {
                             catData?.totalPages > 1 &&
                             <div className="d-flex tableFooter">
                                 <Pagination count={catData?.totalPages} color="primary" className="pagination"
                                     showFirstButton showLastButton onChange={handleChange} />
                             </div>
-                        }
+                        } */}
                     </div>
                 </div>
             </div>

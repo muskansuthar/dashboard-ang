@@ -1,6 +1,5 @@
-import { Breadcrumbs, Button, Checkbox, Chip, Pagination } from "@mui/material";
+import { Breadcrumbs, Button, Chip, Collapse } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
 
@@ -8,9 +7,7 @@ import { emphasize, styled } from '@mui/material/styles';
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MyContext } from "../../App";
-import { deleteData, fetchDataFromApi } from "../../utils/api";
-
-const label = { inputProps: { 'aria-label': 'Checkbox demo' } }
+import { deleteData, fetchDataFromApi } from "../../utils/api";                
 
 //breadcrump code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -36,8 +33,8 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 
 const ProductFinish = () => {
 
-    const [catData, setCatData] = useState([])
-
+    const [productfinishData, setProductfinishData] = useState([])
+    const [openDropdown, setOpenDropdown] = useState({});
     const context = useContext(MyContext)
 
     useEffect(() => {
@@ -45,37 +42,47 @@ const ProductFinish = () => {
 
         context.setProgress(20)
 
-        fetchDataFromApi('/api/category').then(res => {
-            setCatData(res)
+        fetchDataFromApi('/api/productfinish').then(res => {
+            setProductfinishData(res?.productfinishes || [])
             context.setProgress(100)
         })
     }, [])
 
+    const toggleDropdown = (productId) => {
+        setOpenDropdown((prev) => ({ ...prev, [productId]: !prev[productId] }));
+    };
 
-    const deleteCat = (id) => {
+    const deleteFinish = (productId, finishId) => {
+        deleteData(`/api/productfinish/${productId}/${finishId}`).then(() => {
+            context.setAlertBox({ open: true, error: true, msg: "Finish Deleted!" });
+            fetchDataFromApi('/api/productfinish').then(res => setProductfinishData(res?.productfinishes || []));
+        }).catch(err => console.error("Error deleting Finish:", err));
+    };
+
+    const deleteProductfinish = (productId) => {
         context.setProgress(40)
-        deleteData(`/api/category/${id}`).then(() => {
+        deleteData(`/api/productfinish/${productId}`).then(() => {
             context.setProgress(100)
             context.setAlertBox({
                 open: true,
                 error: true,
-                msg: 'Category Deleted!'
+                msg: 'productfinish Deleted!'
             })
-            fetchDataFromApi('/api/category').then(res => {
-                setCatData(res);
+            fetchDataFromApi('/api/productfinish').then(res => {
+                setProductfinishData(res?.productfinishes || []);
             });
         }).catch(err => {
-            console.error("Error deleting category:", err);
+            console.error("Error deleting productfinish:", err);
         });
     };
 
-    const handleChange = (event, value) => {
-        context.setProgress(40)
-        fetchDataFromApi(`/api/category?page=${value}`).then(res => {
-            setCatData(res)
-            context.setProgress(100)
-        });
-    }
+    // const handleChange = (event, value) => {
+    //     context.setProgress(40)
+    //     fetchDataFromApi(`/api/category?page=${value}`).then(res => {
+    //         setCatData(res)
+    //         context.setProgress(100)
+    //     });
+    // }
 
     return (
         <>
@@ -107,50 +114,85 @@ const ProductFinish = () => {
                         <table className="table table-bordered v-align">
                             <thead className="thead-dark">
                                 <tr>
-                                    <th style={{ width: '100px' }}>IMAGE</th>
                                     <th>PRODUCT</th>
-                                    <th>FINISH</th>
+                                    <th>FINISHES</th>
                                     <th>ACTION</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {
-                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
+                                    productfinishData?.length > 0 ? productfinishData.map((item, index) => (
+                                        <React.Fragment key={item._id}>
+                                            <tr>
+                                                <td>{item.productId?.name}</td>
                                                 <td>
-                                                    <div className="d-flex align-items-center productBox">
-                                                        <div className="imgWrapper">
-                                                            <div className="img card shadow m-0">
-                                                                <img src={`${context.baseUrl}/uploads/${item.images[0]}`} className="w-100" alt="" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <Button
+                                                        variant="contained"
+                                                        onClick={() => toggleDropdown(item._id)}
+                                                        style={{ textTransform: "none" }}
+                                                    >
+                                                        {openDropdown[item._id] ? "Hide Finishes" : "Show Finishes"}
+                                                    </Button>
+
+                                                    <Collapse in={openDropdown[item._id]}>
+                                                        <table className="table table-bordered mt-2">
+                                                            <thead className="thead-dark">
+                                                                <tr>
+                                                                    <th>IMAGE</th>
+                                                                    <th>FINISH NAME</th>
+                                                                    <th>ACTION</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {item.finishes.map((finish) => (
+                                                                    <tr key={finish._id}>
+                                                                        <td>
+                                                                            <img
+                                                                                src={`${context.baseUrl}/uploads/${finish.images[0]}`}
+                                                                                className="w-100"
+                                                                                alt="Finish Image"
+                                                                                style={{ maxWidth: "80px" }}
+                                                                            />
+                                                                        </td>
+                                                                        <td>{finish.name?.name}</td>
+                                                                        <td>
+                                                                        <div className="actions d-flex align-items-center">
+                                                                            <Button
+                                                                            className="error"
+                                                                                color="error"
+                                                                                onClick={() => deleteFinish(item.productId._id, finish.name._id)}
+                                                                            >
+                                                                                <MdDelete />
+                                                                            </Button>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </Collapse>
                                                 </td>
-                                                <td>{item.name}</td>
-                                                <td>{item.name}</td>
                                                 <td>
                                                     <div className="actions d-flex align-items-center">
-                                                        <Link to={`/category/edit/${item._id}`}>
-                                                            <Button className="success" color="success"><FaPencilAlt /></Button>
-                                                        </Link>
-                                                        <Button className="error" color="error" onClick={() => deleteCat(item._id)}><MdDelete /></Button>
+                                                        <Button className="error" color="error" onClick={() => deleteProductfinish(item.productId._id)}><MdDelete /></Button>
                                                     </div>
                                                 </td>
                                             </tr>
-
-                                        )
-                                    })
-                                }
+                                        </React.Fragment>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan="3" className="text-center">No Product Finishes Found</td>
+                                        </tr>
+                                    )}
                             </tbody>
                         </table>
-                        {
+                        {/* {
                             catData?.totalPages > 1 &&
                             <div className="d-flex tableFooter">
                                 <Pagination count={catData?.totalPages} color="primary" className="pagination"
                                     showFirstButton showLastButton onChange={handleChange} />
                             </div>
-                        }
+                        } */}
                     </div>
                 </div>
             </div>

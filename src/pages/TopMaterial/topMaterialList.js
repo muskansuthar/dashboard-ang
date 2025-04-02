@@ -33,7 +33,7 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 
 const TopMaterial = () => {
 
-    const [catData, setCatData] = useState([])
+    const [topmaterialData, setTopmaterialData] = useState([])
 
     const context = useContext(MyContext)
 
@@ -42,37 +42,29 @@ const TopMaterial = () => {
 
         context.setProgress(20)
 
-        fetchDataFromApi('/api/category').then(res => {
-            setCatData(res)
+        fetchDataFromApi('/api/topmaterial').then(res => {
+            setTopmaterialData(res)
             context.setProgress(100)
         })
     }, [])
 
 
-    const deleteCat = (id) => {
+    const deleteTopMat = (id) => {
         context.setProgress(40)
-        deleteData(`/api/category/${id}`).then(() => {
+        deleteData(`/api/topmaterial/${id}`).then(() => {
             context.setProgress(100)
             context.setAlertBox({
                 open: true,
                 error: true,
-                msg: 'Category Deleted!'
+                msg: 'topmaterial Deleted!'
             })
-            fetchDataFromApi('/api/category').then(res => {
-                setCatData(res);
+            fetchDataFromApi('/api/topmaterial').then(res => {
+                setTopmaterialData(res);
             });
         }).catch(err => {
-            console.error("Error deleting category:", err);
+            console.error("Error deleting topmaterial:", err);
         });
     };
-
-    const handleChange = (event, value) => {
-        context.setProgress(40)
-        fetchDataFromApi(`/api/category?page=${value}`).then(res => {
-            setCatData(res)
-            context.setProgress(100)
-        });
-    }
 
     return (
         <>
@@ -110,13 +102,13 @@ const TopMaterial = () => {
                             </thead>
                             <tbody>
                                 {
-                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => {
+                                    topmaterialData?.topMaterials?.length !== 0 && topmaterialData?.topMaterials?.map((item, index) => {
                                         return (
                                             <tr key={index}>
                                                 <td>{item.name}</td>
                                                 <td>
                                                     <div className="actions d-flex align-items-center">
-                                                        <Button className="error" color="error" onClick={() => deleteCat(item._id)}><MdDelete /></Button>
+                                                        <Button className="error" color="error" onClick={() => deleteTopMat(item._id)}><MdDelete /></Button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -126,13 +118,6 @@ const TopMaterial = () => {
                                 }
                             </tbody>
                         </table>
-                        {
-                            catData?.totalPages > 1 &&
-                            <div className="d-flex tableFooter">
-                                <Pagination count={catData?.totalPages} color="primary" className="pagination"
-                                    showFirstButton showLastButton onChange={handleChange} />
-                            </div>
-                        }
                     </div>
                 </div>
             </div>

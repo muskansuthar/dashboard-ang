@@ -11,19 +11,6 @@ import { MyContext } from "../../App";
 import { Link } from "react-router-dom";
 import { deleteData, fetchDataFromApi } from "../../utils/api";
 
-export const data = [
-    ["Year", "Sales", "Expenses"],
-    ["2013", 1000, 400],
-    ["2014", 1170, 460],
-    ["2015", 660, 1120],
-    ["2016", 1030, 540],
-];
-
-export const options = {
-    'backgroundColor': 'transparent',
-    'chartArea': { 'width': '100%', 'height': '80%' },
-};
-
 const Dashboard = () => {
 
     // const [anchorEl, setAnchorEl] = useState(null);
@@ -47,7 +34,7 @@ const Dashboard = () => {
 
         window.scrollTo(0, 0)
         context.setProgress(40)
-        fetchDataFromApi("/api/products?page=1&perPage=8").then((res) => {
+        fetchDataFromApi("/api/products").then((res) => {
             setProductList(res)
             context.setProgress(100)
         })
@@ -85,7 +72,7 @@ const Dashboard = () => {
                 error: false,
                 msg: 'Product Deleted!'
             })
-            fetchDataFromApi("/api/products?page=${page}&perPage=8").then((res) => {
+            fetchDataFromApi("/api/products").then((res) => {
                 setProductList(res)
             })
         })
@@ -116,7 +103,7 @@ const Dashboard = () => {
         context.setProgress(40)
         if (event.target.value !== "All") {
             setcategoryVal(event.target.value)
-            fetchDataFromApi(`/api/products?category=${event.target.value}`).then((res) => {
+            fetchDataFromApi(`/api/products/category?category=${event.target.value}`).then((res) => {
                 setProductList(res)
                 context.setProgress(100)
             })
@@ -186,6 +173,14 @@ const Dashboard = () => {
                                 <tr>
                                     <th style={{ width: '300px' }}>PRODUCT</th>
                                     <th>CATEGORY</th>
+                                    <th>LEG FINISH</th>
+                                    <th>LEG MATERIAL</th>
+                                    <th>TOP FINISH</th>
+                                    <th>TOP MATERIAL</th>
+                                    <th>WEIGHT</th>
+                                    <th>HEIGHT</th>
+                                    <th>WIDTH</th>
+                                    <th>LENGTH</th>
                                     <th>PRICE</th>
                                     <th>ACTION</th>
                                 </tr>
@@ -209,17 +204,22 @@ const Dashboard = () => {
                                                     </div>
                                                 </td>
                                                 <td>{item?.category?.name}</td>
+                                                <td>{item?.legfinish?.name}</td>
+                                                <td>{item?.legmaterial?.name}</td>
+                                                <td>{item?.topfinish?.name}</td>
+                                                <td>{item?.topmaterial?.name}</td>
+                                                <td>{item?.weight}</td>
+                                                <td>{item?.height}</td>
+                                                <td>{item?.width}</td>
+                                                <td>{item?.length}</td>
                                                 <td>
                                                     <div style={{ width: "70px" }}>
-                                                        <del className="old">Rs {item?.oldPrice}</del>
+                                                        {/* <del className="old">Rs {item?.oldPrice}</del> */}
                                                         <span className="new text-danger">Rs {item?.price}</span>
                                                     </div>
                                                 </td>
                                                 <td>
                                                     <div className="actions d-flex align-items-center">
-                                                        <Link to='/product/details'>
-                                                            <Button className="secondary" color="secondary"><FaEye /></Button>
-                                                        </Link>
                                                         <Link to={`/product/edit/${item._id}`}>
                                                             <Button className="success" color="success"><FaPencilAlt /></Button>
                                                         </Link>

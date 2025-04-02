@@ -1,6 +1,5 @@
-import { Breadcrumbs, Button, Checkbox, Chip, Pagination } from "@mui/material";
+import { Breadcrumbs, Button, Chip, Collapse } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
 
@@ -36,7 +35,8 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 
 const ProductEdges = () => {
 
-    const [catData, setCatData] = useState([])
+    const [productedgeData, setProductedgeData] = useState([])
+    const [openDropdown, setOpenDropdown] = useState({});
 
     const context = useContext(MyContext)
 
@@ -45,37 +45,47 @@ const ProductEdges = () => {
 
         context.setProgress(20)
 
-        fetchDataFromApi('/api/category').then(res => {
-            setCatData(res)
+        fetchDataFromApi('/api/productedge').then(res => {
+            setProductedgeData(res?.productEdges || [])
             context.setProgress(100)
         })
     }, [])
 
+    const toggleDropdown = (productId) => {
+        setOpenDropdown((prev) => ({ ...prev, [productId]: !prev[productId] }));
+    };
 
-    const deleteCat = (id) => {
+    const deleteEdge = (productId, edgeId) => {
+        deleteData(`/api/productedge/${productId}/${edgeId}`).then(() => {
+            context.setAlertBox({ open: true, error: true, msg: "Edge Deleted!" });
+            fetchDataFromApi('/api/productedge').then(res => setProductedgeData(res?.productEdges || []));
+        }).catch(err => console.error("Error deleting Edge:", err));
+    };
+
+    const deleteProductedge = (productId) => {
         context.setProgress(40)
-        deleteData(`/api/category/${id}`).then(() => {
+        deleteData(`/api/productedge/${productId}`).then(() => {
             context.setProgress(100)
             context.setAlertBox({
                 open: true,
                 error: true,
-                msg: 'Category Deleted!'
+                msg: 'productedge Deleted!'
             })
-            fetchDataFromApi('/api/category').then(res => {
-                setCatData(res);
+            fetchDataFromApi('/api/productedge').then(res => {
+                setProductedgeData(res?.productEdges || []);
             });
         }).catch(err => {
-            console.error("Error deleting category:", err);
+            console.error("Error deleting productedge:", err);
         });
     };
 
-    const handleChange = (event, value) => {
-        context.setProgress(40)
-        fetchDataFromApi(`/api/category?page=${value}`).then(res => {
-            setCatData(res)
-            context.setProgress(100)
-        });
-    }
+    // const handleChange = (event, value) => {
+    //     context.setProgress(40)
+    //     fetchDataFromApi(`/api/category?page=${value}`).then(res => {
+    //         setCatData(res)
+    //         context.setProgress(100)
+    //     });
+    // }
 
     return (
         <>
@@ -107,50 +117,86 @@ const ProductEdges = () => {
                         <table className="table table-bordered v-align">
                             <thead className="thead-dark">
                                 <tr>
-                                    <th style={{ width: '100px' }}>IMAGE</th>
                                     <th>PRODUCT</th>
-                                    <th>EDGE</th>
+                                    <th>EDGES</th>
                                     <th>ACTION</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {
-                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
+                                    productedgeData?.length > 0 ? productedgeData.map((item, index) =>
+                                    (
+                                        <React.Fragment key={item._id}>
+                                            <tr>
+                                                <td>{item.productId?.name}</td>
                                                 <td>
-                                                    <div className="d-flex align-items-center productBox">
-                                                        <div className="imgWrapper">
-                                                            <div className="img card shadow m-0">
-                                                                <img src={`${context.baseUrl}/uploads/${item.images[0]}`} className="w-100" alt="" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <Button
+                                                        variant="contained"
+                                                        onClick={() => toggleDropdown(item._id)}
+                                                        style={{ textTransform: "none" }}
+                                                    >
+                                                        {openDropdown[item._id] ? "Hide Edges" : "Show Edges"}
+                                                    </Button>
+
+                                                    <Collapse in={openDropdown[item._id]}>
+                                                        <table className="table table-bordered mt-2">
+                                                            <thead className="thead-dark">
+                                                                <tr>
+                                                                    <th>IMAGE</th>
+                                                                    <th>EDGE NAME</th>
+                                                                    <th>ACTION</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {item.edges.map((edge) => (
+                                                                    <tr key={edge._id}>
+                                                                        <td>
+                                                                            <img
+                                                                                src={`${context.baseUrl}/uploads/${edge.images[0]}`}
+                                                                                className="w-100"
+                                                                                alt="Edge Image"
+                                                                                style={{ maxWidth: "80px" }}
+                                                                            />
+                                                                        </td>
+                                                                        <td>{edge.name?.name}</td>
+                                                                        <td>
+                                                                            <div className="actions d-flex align-items-center">
+                                                                                <Button
+                                                                                className="error"
+                                                                                    color="error"
+                                                                                    onClick={() => deleteEdge(item.productId._id, edge.name._id)}
+                                                                                >
+                                                                                    <MdDelete />
+                                                                                </Button>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </Collapse>
                                                 </td>
-                                                <td>{item.name}</td>
-                                                <td>{item.name}</td>
                                                 <td>
                                                     <div className="actions d-flex align-items-center">
-                                                        <Link to={`/edge/edit/${item._id}`}>
-                                                            <Button className="success" color="success"><FaPencilAlt /></Button>
-                                                        </Link>
-                                                        <Button className="error" color="error" onClick={() => deleteCat(item._id)}><MdDelete /></Button>
+                                                        <Button className="error" color="error" onClick={() => deleteProductedge(item.productId._id)}><MdDelete /></Button>
                                                     </div>
                                                 </td>
                                             </tr>
-
-                                        )
-                                    })
-                                }
+                                        </React.Fragment>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan="3" className="text-center">No Product Edges Found</td>
+                                        </tr>
+                                    )}
                             </tbody>
                         </table>
-                        {
+                        {/* {
                             catData?.totalPages > 1 &&
                             <div className="d-flex tableFooter">
                                 <Pagination count={catData?.totalPages} color="primary" className="pagination"
                                     showFirstButton showLastButton onChange={handleChange} />
                             </div>
-                        }
+                        } */}
                     </div>
                 </div>
             </div>
