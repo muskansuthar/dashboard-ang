@@ -65,14 +65,24 @@ const AddEdge = () => {
             setIsLoading(true)
 
             postData('/api/edge/create', formFields).then(res => {
-                context.setAlertBox({
-                    open: true,
-                    msg: 'The edge is created!',
-                    error: false
-                })
-                setIsLoading(false)
-                // context.fetchCategory()
-                history('/edge')
+                if (res.error !== true) {
+                    context.setAlertBox({
+                        open: true,
+                        msg: 'The Edge is created!',
+                        error: false
+                    })
+                    setIsLoading(false)
+                    history('/edge')
+                } else {
+                    setIsLoading(false)
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg
+                    })
+                    setIsLoading(false)
+                    history('/edge')
+                }
             })
         } else {
             context.setAlertBox({

@@ -12,29 +12,6 @@ export const fetchDataFromApi = async (url) => {
     }
 }
 
-//for send data only text feilds
-// export const postData = async (url, formFields) => {
-//     try {
-//         const response = await fetch("http://localhost:4000" + url, {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify(formFields), // Serialize the JSON object
-//         });
-
-//         if (response.ok) {
-//             const data = await response.json();
-//             return data;
-//         } else {
-//             const errorData = await response.json();
-//             return errorData;
-//         }
-//     } catch (error) {
-//         return { error: true, msg: "Network error or server not reachable" };
-//     }
-// };
-
 export const postData = async (url, formFields) => {
     try {
         const response = await axios.post(process.env.REACT_APP_BASE_URL + url, formFields, {

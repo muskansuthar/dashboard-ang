@@ -2,13 +2,11 @@ import { Breadcrumbs, Button, Chip } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { emphasize, styled } from '@mui/material/styles';
-import { useContext, useEffect, useState } from "react";
-import { FaCloudUploadAlt, FaRegImages } from "react-icons/fa";
-import { deleteImages, postData } from "../../utils/api";
+import { useContext, useState } from "react";
+import { postData } from "../../utils/api";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
 import { MyContext } from "../../App";
-import { IoCloseSharp } from "react-icons/io5";
 
 
 //breadcrump code
@@ -66,14 +64,24 @@ const AddFinish = () => {
             setIsLoading(true)
 
             postData('/api/finish/create', formFields).then(res => {
-                context.setAlertBox({
-                    open: true,
-                    msg: 'The finish is created!',
-                    error: false
-                })
-                setIsLoading(false)
-                // context.fetchCategory()
-                history('/finish')
+                if (res.error !== true) {
+                    context.setAlertBox({
+                        open: true,
+                        msg: 'The Finish is created!',
+                        error: false
+                    })
+                    setIsLoading(false)
+                    history('/finish')
+                } else {
+                    setIsLoading(false)
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg
+                    })
+                    setIsLoading(false)
+                    history('/finish')
+                }
             })
         } else {
             context.setAlertBox({

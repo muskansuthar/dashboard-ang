@@ -1,6 +1,5 @@
-import { Breadcrumbs, Button, Checkbox, Chip, Pagination } from "@mui/material";
+import { Breadcrumbs, Button, Chip } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import { FaPencilAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
 
@@ -9,8 +8,6 @@ import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MyContext } from "../../App";
 import { deleteData, fetchDataFromApi } from "../../utils/api";
-
-const label = { inputProps: { 'aria-label': 'Checkbox demo' } }
 
 //breadcrump code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -69,14 +66,6 @@ const Category = () => {
         });
     };
 
-    // const handleChange = (event, value) => {
-    //     context.setProgress(40)
-    //     fetchDataFromApi(`/api/category?page=${value}`).then(res => {
-    //         setCatData(res)
-    //         context.setProgress(100)
-    //     });
-    // }
-
     return (
         <>
             <div className="right-content w-100">
@@ -107,9 +96,7 @@ const Category = () => {
                         <table className="table table-bordered v-align">
                             <thead className="thead-dark">
                                 <tr>
-                                    <th style={{ width: '100px' }}>IMAGE</th>
                                     <th>CATEGORY</th>
-                                    <th>SLUG</th>
                                     <th>ACTION</th>
                                 </tr>
                             </thead>
@@ -118,22 +105,9 @@ const Category = () => {
                                     catData?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => {
                                         return (
                                             <tr key={index}>
-                                                <td>
-                                                    <div className="d-flex align-items-center productBox">
-                                                        <div className="imgWrapper">
-                                                            <div className="img card shadow m-0">
-                                                                <img src={`${context.baseUrl}/uploads/${item.images[0]}`} className="w-100" alt="" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
                                                 <td>{item.name}</td>
-                                                <td>{item.slug}</td>
                                                 <td>
                                                     <div className="actions d-flex align-items-center">
-                                                        {/* <Link to={`/category/edit/${item._id}`}>
-                                                            <Button className="success" color="success"><FaPencilAlt /></Button>
-                                                        </Link> */}
                                                         <Button className="error" color="error" onClick={() => deleteCat(item._id)}><MdDelete /></Button>
                                                     </div>
                                                 </td>
@@ -144,13 +118,6 @@ const Category = () => {
                                 }
                             </tbody>
                         </table>
-                        {/* {
-                            catData?.totalPages > 1 &&
-                            <div className="d-flex tableFooter">
-                                <Pagination count={catData?.totalPages} color="primary" className="pagination"
-                                    showFirstButton showLastButton onChange={handleChange} />
-                            </div>
-                        } */}
                     </div>
                 </div>
             </div>

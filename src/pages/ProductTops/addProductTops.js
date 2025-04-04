@@ -4,11 +4,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { emphasize, styled } from '@mui/material/styles';
 import { useContext, useEffect, useState } from "react";
 import { FaCloudUploadAlt, FaRegImages } from "react-icons/fa";
-import { deleteImages, fetchDataFromApi, postData } from "../../utils/api";
+import { fetchDataFromApi, postData } from "../../utils/api";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
 import { MyContext } from "../../App";
-import { IoCloseSharp } from "react-icons/io5";
 
 
 //breadcrump code
@@ -109,72 +108,6 @@ const AddProductTops = () => {
         }))
     };
 
-
-
-    // const changeInput = (e) => {
-    //     setFormFields(() => (
-    //         {
-    //             ...formFields,
-    //             [e.target.name]: e.target.value
-    //         }
-    //     ))
-
-    // }
-
-    //for claudinary images 
-    // let img_arr = []
-    // let uniqueArray = []
-
-    // const onchangeFile = async (e, apiEndPoint) => {
-    //         try {
-    //             const files = e.target.files;
-
-    //             setUploading(true)
-
-    //             for (let i = 0; i < files.length; i++) {
-
-    //                 if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
-
-    //                     const file = files[i]
-
-
-    //                     imgArr.push(file)
-    //                     formData.append('images', file)
-
-    //                     setFiles(imgArr);
-    //                     context.setAlertBox({
-    //                         open: true,
-    //                         error: false,
-    //                         msg: "images uploaded!"
-    //                     })
-
-    //                     setIsSelectedFiles(true)
-
-    //                     console.log(imgArr);
-    //                     postData(apiEndPoint, formData).then((res) => {
-    //                         context.setAlertBox({
-    //                             open: true,
-    //                             error: false,
-    //                             msg: "images uploaded!"
-    //                         })
-    //                     })
-    //                 } else {
-    //                     context.setAlertBox({
-    //                         open: true,
-    //                         error: true,
-    //                         msg: "Please select a valid JPG or PNG image file."
-    //                     })
-    //                 }
-
-    //             }
-    //         } catch (error) {
-    //             console.log(error)
-    //         }
-    //     }
-
-
-    // for upload imges in local folder with multer
-
     const onchangeFile = async (e, apiEndPoint) => {
         try {
             const imgArr = [];
@@ -212,42 +145,6 @@ const AddProductTops = () => {
         }
     }
 
-    const removeImg = async (index, imgUrl) => {
-        try {
-            const originalUrl = originalUrls[index];
-
-            // Call the API to delete the image
-            deleteImages(`/api/producttop/deleteImage?img=${originalUrl}`).then((res) => {
-                if (res.success) {
-                    context.setAlertBox({
-                        open: true,
-                        error: false,
-                        msg: "Image Deleted!",
-                    });
-
-                    const updatedOriginalUrls = originalUrls.filter((_, i) => i !== index);
-                    const updatedpreviews = previews.filter((_, i) => i !== index);
-
-                    setOriginalUrls(updatedOriginalUrls);
-                    setPreviews(updatedpreviews);
-                } else {
-                    context.setAlertBox({
-                        open: true,
-                        error: true,
-                        msg: res.msg || "Failed to delete image",
-                    });
-                }
-            })
-        } catch (error) {
-            console.error("Error deleting image:", error);
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "Error deleting image",
-            });
-        }
-    }
-
     const addProducttop = (e) => {
         e.preventDefault()
 
@@ -259,14 +156,24 @@ const AddProductTops = () => {
             setIsLoading(true)
 
             postData('/api/producttop/create', formFields).then((res) => {
-                context.setAlertBox({
-                    open: true,
-                    msg: 'The producttop is created!',
-                    error: false
-                })
-                setIsLoading(false)
-                // context.fetchCategory()
-                history('/producttop')
+                if (res.error !== true) {
+                    context.setAlertBox({
+                      open: true,
+                      msg: "The producttop is created!",
+                      error: false,
+                    });
+                    setIsLoading(false);
+                    history("/producttop");
+                  } else {
+                    setIsLoading(false);
+                    context.setAlertBox({
+                      open: true,
+                      error: true,
+                      msg: res.msg,
+                    });
+                    setIsLoading(false);
+                    history("/producttop");
+                  }
             })
         } else {
             context.setAlertBox({
@@ -372,7 +279,6 @@ const AddProductTops = () => {
                                     previews?.length !== 0 && previews?.map((img, index) => {
                                         return (
                                             <div className="uploadBox" key={index}>
-                                                <spna className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></spna>
                                                 <img src={img} className="w-100" alt="" />
                                             </div>
                                         )

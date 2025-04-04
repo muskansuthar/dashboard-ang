@@ -63,14 +63,24 @@ const AddTopMaterial = () => {
             setIsLoading(true)
 
             postData('/api/topmaterial/create', formFields).then(res => {
-                context.setAlertBox({
-                    open: true,
-                    msg: 'The topmaterial is created!',
-                    error: false
-                })
-                setIsLoading(false)
-                // context.fetchCategory()
-                history('/topmaterial')
+                if (res.error !== true) {
+                    context.setAlertBox({
+                        open: true,
+                        msg: 'The topmaterial is created!',
+                        error: false
+                    })
+                    setIsLoading(false)
+                    history('/topmaterial')
+                } else {
+                    setIsLoading(false)
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg
+                    })
+                    setIsLoading(false)
+                    history('/topmaterial')
+                }
             })
         } else {
             context.setAlertBox({

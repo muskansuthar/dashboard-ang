@@ -6,9 +6,8 @@ import { MdMail } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Button } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import CircularProgress from '@mui/material/CircularProgress';
-import googleIcon from "../../assests/images/g.png"
 import { postData } from "../../utils/api";
 
 
@@ -23,7 +22,6 @@ const Login = () => {
         isAdmin: true
     })
 
-    const history = useNavigate()
     const context = useContext(MyContext)
 
     useEffect(() => {
@@ -86,7 +84,6 @@ const Login = () => {
 
                     setTimeout(() => {
                         setIsLoading(false)
-                        // history("/")
                         window.location.href = "/"
                     }, 2000)
                 } else {
@@ -112,7 +109,7 @@ const Login = () => {
                 <div className="loginBox">
                     <div className="logo text-center">
                         <img src={Logo} width="60px" alt="" />
-                        <h5 className="font-weight-bold">Login to Hotash</h5>
+                        <h5 className="font-weight-bold">Login to Dashboard</h5>
                     </div>
 
                     <div className="wrapper mt-3 card border">
@@ -148,10 +145,6 @@ const Login = () => {
                                     <span className="txt">or</span>
                                     <span className="line"></span>
                                 </div>
-
-                                <Button variant="outlined" className="w-100 btn-lg loginWithGoogle btn-big">
-                                    <img src={googleIcon} width="25px" alt="" /> &nbsp; Sign In With Google
-                                </Button>
                             </div>
                         </form>
                     </div>

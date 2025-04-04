@@ -66,14 +66,24 @@ const AddLegFinish = () => {
             setIsLoading(true)
 
             postData('/api/legfinish/create', formFields).then(res => {
-                context.setAlertBox({
-                    open: true,
-                    msg: 'The legfinish is created!',
-                    error: false
-                })
-                setIsLoading(false)
-                // context.fetchCategory()
-                history('/legfinish')
+                if (res.error !== true) {
+                    context.setAlertBox({
+                        open: true,
+                        msg: 'The legfinish is created!',
+                        error: false
+                    })
+                    setIsLoading(false)
+                    history('/legfinish')
+                } else {
+                    setIsLoading(false)
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg
+                    })
+                    setIsLoading(false)
+                    history('/legfinish')
+                }
             })
         } else {
             context.setAlertBox({

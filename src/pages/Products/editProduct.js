@@ -2,10 +2,9 @@ import { Breadcrumbs, Button, Chip, MenuItem, Select, CircularProgress } from "@
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { emphasize, styled } from '@mui/material/styles';
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaCloudUploadAlt, FaRegImages } from "react-icons/fa";
-import { IoCloseSharp } from "react-icons/io5";
-import { deleteImages, editData, fetchDataFromApi, postData } from "../../utils/api";
+import { editData, fetchDataFromApi, postData } from "../../utils/api";
 import { MyContext } from "../../App";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -32,18 +31,6 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
     };
 });
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        }
-    }
-}
-
-
 
 const EditProduct = () => {
 
@@ -55,11 +42,8 @@ const EditProduct = () => {
     const [isFeaturedValue, setIsFeaturedValue] = useState('');
     const [catData, setCatData] = useState([])
     const [isLoading, setIsLoading] = useState(false)
-    const [files, setFiles] = useState([])
     const [imgFiles, setimgFiles] = useState([])
     const [previews, setPreviews] = useState([])
-    const [products, setProducts] = useState([])
-    const [originalUrls, setOriginalUrls] = useState([])
     const [isSelectedFiles, setIsSelectedFiles] = useState(false)
 
     const [legfinishData, setLegfinishData] = useState([])
@@ -86,8 +70,6 @@ const EditProduct = () => {
 
     let { id } = useParams();
     const history = useNavigate();
-
-    const productImages = useRef();
     const context = useContext(MyContext)
     const formData = new FormData();
 
@@ -118,7 +100,6 @@ const EditProduct = () => {
 
         context.setProgress(20)
         fetchDataFromApi(`/api/products/${id}`).then((res) => {
-            setProducts(res)
             setFormFields({
                 name: res.name,
                 description: res.description,
@@ -127,19 +108,19 @@ const EditProduct = () => {
                 weight: res.weight,
                 width: res.width,
                 length: res.length,
-                category: res.category.name,
-                legfinish: res.legfinish.name,
-                legmaterial: res.legmaterial.name,
-                topfinish: res.topfinish.name,
-                topmaterial: res.topmaterial.name,
+                category: res.category?.name,
+                legfinish: res.legfinish?.name,
+                legmaterial: res.legmaterial?.name,
+                topfinish: res.topfinish?.name,
+                topmaterial: res.topmaterial?.name,
                 isFeatured: res.isFeatured,
             })
 
-            setcategoryVal(res.category._id)
-            setLegfinishVal(res.legfinish._id)
-            setLegmaterialVal(res.legmaterial._id)
-            setTopfinishVal(res.topfinish._id)
-            setTopmaterialVal(res.topmaterial._id)
+            setcategoryVal(res.category?._id)
+            setLegfinishVal(res.legfinish?._id)
+            setLegmaterialVal(res.legmaterial?._id)
+            setTopfinishVal(res.topfinish?._id)
+            setTopmaterialVal(res.topmaterial?._id)
             setIsFeaturedValue(res.isFeatured)
             setPreviews(res.images)
             context.setProgress(100)
@@ -238,7 +219,6 @@ const EditProduct = () => {
                 }
             }
             setIsSelectedFiles(true)
-            setFiles(imgArr);
             postData(apiEndPoint, formData).then((res) => {
                 // setOriginalUrls(res);
                 context.setAlertBox({
@@ -249,70 +229,6 @@ const EditProduct = () => {
             })
         } catch (error) {
             console.log(error)
-        }
-    }
-
-    const removeImg = async (index, imgUrl) => {
-        try {
-
-            if (originalUrls.length !== 0) {
-
-                const originalUrl = originalUrls[index];
-
-                // Call the API to delete the image
-                deleteImages(`/api/products/deleteImage?img=${originalUrl}`).then((res) => {
-                    if (res.success) {
-                        context.setAlertBox({
-                            open: true,
-                            error: false,
-                            msg: "Image Deleted!",
-                        });
-
-                        const updatedOriginalUrls = originalUrls.filter((_, i) => i !== index);
-                        const updatedpreviews = previews.filter((_, i) => i !== index);
-
-                        setOriginalUrls(updatedOriginalUrls);
-                        setPreviews(updatedpreviews);
-                    } else {
-                        context.setAlertBox({
-                            open: true,
-                            error: true,
-                            msg: res.msg || "Failed to delete image",
-                        });
-                    }
-                })
-
-
-            } else {
-                deleteImages(`/api/products/deleteImage?img=${imgUrl}`).then((res) => {
-                    if (res.success) {
-                        context.setAlertBox({
-                            open: true,
-                            error: false,
-                            msg: "Image Deleted!",
-                        });
-
-                        const updatedPreviews = previews.filter((url) => url !== imgUrl);
-                        console.log(updatedPreviews)
-                        setPreviews(updatedPreviews);
-                    } else {
-                        context.setAlertBox({
-                            open: true,
-                            error: true,
-                            msg: res.msg || "Failed to delete image",
-                        });
-                    }
-                })
-
-            }
-
-        } catch (error) {
-            console.error("Error deleting image:", error);
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "Error deleting image",
-            });
         }
     }
 
@@ -341,11 +257,6 @@ const EditProduct = () => {
         topfinish: topfinishVal,
         topmaterial: topmaterialVal,
     };
-
-        // console.log(previews)
-        // if (previews.length > 0 && imgFiles.length === 0) {
-        //     previews.forEach((url) => formData.append('images', url));
-        // }
 
         if (formFields.name === "") {
             context.setAlertBox({
@@ -391,46 +302,6 @@ const EditProduct = () => {
             context.setAlertBox({
                 open: true,
                 msg: 'please add product legmaterial',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.topfinish === "") {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product topfinish',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.topmaterial === "") {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product topmaterial',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.height === "") {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product height',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.length === "") {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product length',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.width === "") {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product width',
                 error: true
             })
             return false;
@@ -570,7 +441,7 @@ const EditProduct = () => {
                                                 {
                                                     catData?.categoryList?.length !== 0 && catData?.categoryList?.map((cat, index) => {
                                                         return (
-                                                            <MenuItem className="text-capitalize" value={cat._id} key={index}>{cat.name}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={cat?._id} key={index}>{cat?.name}</MenuItem>
                                                         )
                                                     })
                                                 }
@@ -593,7 +464,7 @@ const EditProduct = () => {
                                                 {
                                                     topfinishData?.topFinishes?.length !== 0 && topfinishData?.topFinishes?.map((item, index) => {
                                                         return (
-                                                            <MenuItem className="text-capitalize" value={item._id} key={index} >{item.name}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={item?._id} key={index} >{item?.name}</MenuItem>
                                                         )
                                                     })
                                                 }
@@ -616,7 +487,7 @@ const EditProduct = () => {
                                                 {
                                                     topmaterialData?.topMaterials?.length !== 0 && topmaterialData?.topMaterials?.map((item, index) => {
                                                         return (
-                                                            <MenuItem className="text-capitalize" value={item._id} key={index}>{item.name}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={item?._id} key={index}>{item?.name}</MenuItem>
                                                         )
                                                     })
                                                 }
@@ -642,7 +513,7 @@ const EditProduct = () => {
                                                 {
                                                     legfinishData?.legFinishes?.length !== 0 && legfinishData?.legFinishes?.map((item, index) => {
                                                         return (
-                                                            <MenuItem className="text-capitalize" value={item._id} key={index}>{item.name}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={item?._id} key={index}>{item?.name}</MenuItem>
                                                         )
                                                     })
                                                 }
@@ -665,7 +536,7 @@ const EditProduct = () => {
                                                 {
                                                     legmaterialData?.legMaterials?.length !== 0 && legmaterialData?.legMaterials?.map((item, index) => {
                                                         return (
-                                                            <MenuItem className="text-capitalize" value={item._id} key={index}>{item.name}</MenuItem>
+                                                            <MenuItem className="text-capitalize" value={item?._id} key={index}>{item?.name}</MenuItem>
                                                         )
                                                     })
                                                 }
@@ -705,7 +576,6 @@ const EditProduct = () => {
                                     previews?.length !== 0 && previews?.map((img, index) => {
                                         return (
                                             <div className="uploadBox" key={index}>
-                                                <spna className="remove" onClick={() => removeImg(index, img)}><IoCloseSharp /></spna>
                                                 {
                                                     isSelectedFiles === true ?
                                                         <img src={`${img}`} className="w-100" alt="" />

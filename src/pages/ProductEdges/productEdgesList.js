@@ -9,7 +9,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MyContext } from "../../App";
 import { deleteData, fetchDataFromApi } from "../../utils/api";
 
-const label = { inputProps: { 'aria-label': 'Checkbox demo' } }
 
 //breadcrump code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -78,14 +77,6 @@ const ProductEdges = () => {
             console.error("Error deleting productedge:", err);
         });
     };
-
-    // const handleChange = (event, value) => {
-    //     context.setProgress(40)
-    //     fetchDataFromApi(`/api/category?page=${value}`).then(res => {
-    //         setCatData(res)
-    //         context.setProgress(100)
-    //     });
-    // }
 
     return (
         <>
@@ -190,13 +181,6 @@ const ProductEdges = () => {
                                     )}
                             </tbody>
                         </table>
-                        {/* {
-                            catData?.totalPages > 1 &&
-                            <div className="d-flex tableFooter">
-                                <Pagination count={catData?.totalPages} color="primary" className="pagination"
-                                    showFirstButton showLastButton onChange={handleChange} />
-                            </div>
-                        } */}
                     </div>
                 </div>
             </div>

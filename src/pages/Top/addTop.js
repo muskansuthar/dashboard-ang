@@ -66,14 +66,24 @@ const AddTop = () => {
             setIsLoading(true)
 
             postData('/api/top/create', formFields).then(res => {
-                context.setAlertBox({
-                    open: true,
-                    msg: 'The top is created!',
-                    error: false
-                })
-                setIsLoading(false)
-                // context.fetchCategory()
-                history('/top')
+                if (res.error !== true) {
+                    context.setAlertBox({
+                        open: true,
+                        msg: 'The top is created!',
+                        error: false
+                    })
+                    setIsLoading(false)
+                    history('/top')
+                } else {
+                    setIsLoading(false)
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg
+                    })
+                    setIsLoading(false)
+                    history('/top')
+                }
             })
         } else {
             context.setAlertBox({

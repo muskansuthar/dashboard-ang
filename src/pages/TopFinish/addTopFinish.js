@@ -66,14 +66,24 @@ const AddTopFinish = () => {
             setIsLoading(true)
 
             postData('/api/topfinish/create', formFields).then(res => {
-                context.setAlertBox({
-                    open: true,
-                    msg: 'The topfinish is created!',
-                    error: false
-                })
-                setIsLoading(false)
-                // context.fetchCategory()
-                history('/topfinish')
+                if (res.error !== true) {
+                    context.setAlertBox({
+                        open: true,
+                        msg: 'The topfinish is created!',
+                        error: false
+                    })
+                    setIsLoading(false)
+                    history('/topfinish')
+                } else {
+                    setIsLoading(false)
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg
+                    })
+                    setIsLoading(false)
+                    history('/topfinish')
+                }
             })
         } else {
             context.setAlertBox({

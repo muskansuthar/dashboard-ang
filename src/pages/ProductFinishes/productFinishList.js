@@ -76,14 +76,6 @@ const ProductFinish = () => {
         });
     };
 
-    // const handleChange = (event, value) => {
-    //     context.setProgress(40)
-    //     fetchDataFromApi(`/api/category?page=${value}`).then(res => {
-    //         setCatData(res)
-    //         context.setProgress(100)
-    //     });
-    // }
-
     return (
         <>
             <div className="right-content w-100">
@@ -186,13 +178,6 @@ const ProductFinish = () => {
                                     )}
                             </tbody>
                         </table>
-                        {/* {
-                            catData?.totalPages > 1 &&
-                            <div className="d-flex tableFooter">
-                                <Pagination count={catData?.totalPages} color="primary" className="pagination"
-                                    showFirstButton showLastButton onChange={handleChange} />
-                            </div>
-                        } */}
                     </div>
                 </div>
             </div>

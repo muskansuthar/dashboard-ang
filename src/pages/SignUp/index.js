@@ -1,13 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { MyContext } from "../../App";
 import Logo from "../../assests/images/Logo.png"
-import patern from "../../assests/images/pattern.webp"
 import { MdMail } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
-import { IoMdEye, IoMdEyeOff, IoMdHome } from "react-icons/io";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Button } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
-import googleIcon from "../../assests/images/g.png"
 import { FaPhoneAlt, FaUserCircle } from "react-icons/fa";
 import { IoShieldCheckmarkSharp } from "react-icons/io5";
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -136,21 +134,8 @@ const SignUp = () => {
 
     return (
         <>
-            <img src={patern} className="loginPatern" alt="" />
             <section className="loginSection signUpSection">
-
-                <div className="row">
-                    <div className="col-md-8 d-flex align-items-center flex-column part1 justify-content-center">
-                        <h1>Best ux/ui fashion <span className="text-sky">ECOMMERCE DASHBOARD</span> & admin panel</h1>
-                        <p>Elit Iusto dolore libero recusandae dolor dolores explicabo ullam cum facilis aperiam alias odio quam excepturi molestiae omnis inventore. Repudiandae officia placeat amet consectetur dicta dolorem quo</p>
-
-                        <div className="w-100 mt-4">
-                            <Link to={'/'}>
-                                <Button className="btn-blue btn-lg btn-big"><IoMdHome /> Go To Home</Button>
-                            </Link>
-                        </div>
-                    </div>
-
+                <div className="row justify-content-center">
                     <div className="col-md-4 pr-0">
                         <div className="loginBox">
                             <div className="logo text-center">
@@ -209,10 +194,6 @@ const SignUp = () => {
                                             <span className="txt">or</span>
                                             <span className="line"></span>
                                         </div>
-
-                                        <Button variant="outlined" className="w-100 btn-lg loginWithGoogle btn-big">
-                                            <img src={googleIcon} width="25px" alt="" /> &nbsp; Sign In With Google
-                                        </Button>
                                     </div>
                                 </form>
                                 <span className="text-center d-block mt-2">

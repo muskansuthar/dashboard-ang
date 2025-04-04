@@ -66,14 +66,24 @@ const AddLegMaterial = () => {
             setIsLoading(true)
 
             postData('/api/legmaterial/create', formFields).then(res => {
-                context.setAlertBox({
-                    open: true,
-                    msg: 'The legmaterial is created!',
-                    error: false
-                })
-                setIsLoading(false)
-                // context.fetchCategory()
-                history('/legmaterial')
+                if (res.error !== true) {
+                    context.setAlertBox({
+                        open: true,
+                        msg: 'The legmaterial is created!',
+                        error: false
+                    })
+                    setIsLoading(false)
+                    history('/legmaterial')
+                } else {
+                    setIsLoading(false)
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg
+                    })
+                    setIsLoading(false)
+                    history('/legmaterial')
+                }
             })
         } else {
             context.setAlertBox({
