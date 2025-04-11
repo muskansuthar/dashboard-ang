@@ -3,10 +3,10 @@ import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { emphasize, styled } from '@mui/material/styles';
 import { useContext, useState } from "react";
-import { postData } from "../../utils/api";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
 import { MyContext } from "../../App";
+import { postFeilds } from "../../utils/api";
 
 
 //breadcrump code
@@ -65,7 +65,7 @@ const AddTopFinish = () => {
         if (formFields.name !== "") {
             setIsLoading(true)
 
-            postData('/api/topfinish/create', formFields).then(res => {
+            postFeilds('/api/topfinish/create', formFields).then(res => {
                 if (res.error !== true) {
                     context.setAlertBox({
                         open: true,

@@ -1,14 +1,14 @@
 import { Breadcrumbs, Button, Chip } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
 
 import { emphasize, styled } from '@mui/material/styles';
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MyContext } from "../../App";
-import { deleteData, fetchDataFromApi } from "../../utils/api";
+import { fetchDataFromApi } from "../../utils/api";
 import { FaPencilAlt } from "react-icons/fa";
+
 
 //breadcrump code
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
@@ -32,9 +32,9 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 });
 
 
-const Category = () => {
+const Mobileimage = () => {
 
-    const [catData, setCatData] = useState([])
+    const [mobileimage, setMobileimage] = useState([])
 
     const context = useContext(MyContext)
 
@@ -43,35 +43,17 @@ const Category = () => {
 
         context.setProgress(20)
 
-        fetchDataFromApi('/api/category').then(res => {
-            setCatData(res)
+        fetchDataFromApi('/api/mobileimg').then(res => {
+            setMobileimage(res)
             context.setProgress(100)
         })
     }, [])
-
-
-    const deleteCat = (id) => {
-        context.setProgress(40)
-        deleteData(`/api/category/${id}`).then(() => {
-            context.setProgress(100)
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: 'Category Deleted!'
-            })
-            fetchDataFromApi('/api/category').then(res => {
-                setCatData(res);
-            });
-        }).catch(err => {
-            console.error("Error deleting category:", err);
-        });
-    };
 
     return (
         <>
             <div className="right-content w-100">
                 <div className="card shadow border-0 w-100 flex-row p-4">
-                    <h5 className="mb-0">Category List</h5>
+                    <h5 className="mb-0">Mobile Image</h5>
                     <div className="ml-auto d-flex align-items-center">
                         <Breadcrumbs aria-label="breadcrumb" className="ml-auto breadcrumbs_">
                             <StyledBreadcrumb
@@ -81,12 +63,12 @@ const Category = () => {
                                 icon={<HomeIcon fontSize="small" />}
                             />
                             <StyledBreadcrumb
-                                label="Category"
+                                label="Mobile Image"
                                 deleteIcon={<ExpandMoreIcon />}
                             />
                         </Breadcrumbs>
 
-                        <Link to="/category/add"><Button className="btn-blue ml-3 pl-3 pr-3">Add Category</Button></Link>
+                        <Link to="/mobileimage/add"><Button className="btn-blue ml-3 pl-3 pr-3">Add Mobile Image</Button></Link>
                     </div>
                 </div>
 
@@ -97,40 +79,40 @@ const Category = () => {
                         <table className="table table-bordered v-align">
                             <thead className="thead-dark">
                                 <tr>
-                                <th>IMAGE</th>
-                                    <th>CATEGORY</th>
+                                    <th>IMAGE</th>
                                     <th>ACTION</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {
-                                    catData?.categoryList?.length !== 0 && catData?.categoryList?.map((item, index) => {
-                                        return (
-                                            <tr key={index}>
+                                    mobileimage?.data?.length > 0 ? mobileimage?.data?.map((item, index) =>
+                                    (
+                                        <React.Fragment key={item._id}>
+                                            <tr>
                                                 <td>
                                                     <img
                                                         src={`${context.baseUrl}/uploads/${item.images[0]}`}
                                                         className="w-100"
-                                                        alt="Category Image"
+                                                        alt="Home Page Image"
                                                         style={{ maxWidth: "80px" }}
                                                     />
                                                 </td>
-                                                <td>{item.name}</td>
                                                 <td>
                                                     <div className="actions d-flex align-items-center">
-                                                        <Link to={`/category/edit/${item._id}`}>
+                                                        <Link to={`/mobileimage/edit/${item._id}`}>
                                                             <Button className="success" color="success">
                                                                 <FaPencilAlt />
                                                             </Button>
                                                         </Link>
-                                                        <Button className="error" color="error" onClick={() => deleteCat(item._id)}><MdDelete /></Button>
                                                     </div>
                                                 </td>
                                             </tr>
-
-                                        )
-                                    })
-                                }
+                                        </React.Fragment>
+                                    )) : (
+                                        <tr>
+                                            <td colSpan="3" className="text-center">No Mobile Image Found</td>
+                                        </tr>
+                                    )}
                             </tbody>
                         </table>
                     </div>
@@ -140,4 +122,4 @@ const Category = () => {
     )
 }
 
-export default Category;
+export default Mobileimage;

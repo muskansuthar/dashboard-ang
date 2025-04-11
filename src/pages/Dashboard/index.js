@@ -117,11 +117,10 @@ const Dashboard = () => {
                   <th>LEG MATERIAL</th>
                   <th>TOP FINISH</th>
                   <th>TOP MATERIAL</th>
-                  <th>WEIGHT</th>
+                  <th>CBM</th>
                   <th>HEIGHT</th>
                   <th>WIDTH</th>
                   <th>LENGTH</th>
-                  <th>PRICE</th>
                   <th>ACTION</th>
                 </tr>
               </thead>
@@ -143,7 +142,6 @@ const Dashboard = () => {
                             </div>
                             <div className="info pl-3">
                               <h6>{item?.name}</h6>
-                              <p>{item?.description}</p>
                             </div>
                           </div>
                         </td>
@@ -152,18 +150,10 @@ const Dashboard = () => {
                         <td>{item?.legmaterial?.name}</td>
                         <td>{item?.topfinish?.name}</td>
                         <td>{item?.topmaterial?.name}</td>
-                        <td>{item?.weight}</td>
+                        <td>{item?.cbm}</td>
                         <td>{item?.height}</td>
                         <td>{item?.width}</td>
                         <td>{item?.length}</td>
-                        <td>
-                          <div style={{ width: "70px" }}>
-                            {/* <del className="old">Rs {item?.oldPrice}</del> */}
-                            <span className="new text-danger">
-                              Rs {item?.price}
-                            </span>
-                          </div>
-                        </td>
                         <td>
                           <div className="actions d-flex align-items-center">
                             <Link to={`/product/edit/${item._id}`}>

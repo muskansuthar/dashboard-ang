@@ -12,7 +12,7 @@ export const fetchDataFromApi = async (url) => {
     }
 }
 
-export const postData = async (url, formFields) => {
+export const postFeilds = async (url, formFields) => {
     try {
         const response = await axios.post(process.env.REACT_APP_BASE_URL + url, formFields, {
             headers: {
@@ -31,30 +31,11 @@ export const postData = async (url, formFields) => {
     }
 };
 
-//this is with images and data 
-// export const postData = async (url, formData) => {
-//     try {
-//         const response = await fetch("http://localhost:4000" + url, {
-//             method: 'POST',
-//             body: formData
-//         });
-
-//         if (response.ok) {
-//             const data = await response.json();
-//             return data;
-//         } else {
-//             const errorData = await response.json();
-//             return errorData;
-//         }
-//     } catch (error) {
-//         return { error: true, msg: "Network error or server not reachable" };
-//     }
-// };
-
 export const editData = async (url, updatedData) => {
     const { data } = await axios.put(process.env.REACT_APP_BASE_URL + url, updatedData, {
         headers: {
             'Authorization': `Bearer ${jwtToken}`,
+            'Content-Type': 'multipart/form-data',
         }
     })
     return data
@@ -68,6 +49,24 @@ export const deleteData = async (url) => {
     })
     return data
 }
+
+export const postData = async (url, formData) => {
+    try {
+        const response = await axios.post(process.env.REACT_APP_BASE_URL + url, formData, {
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+                'Content-Type': 'multipart/form-data',
+            }
+        });
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            return error.response.data;
+        } else {
+            return { error: true, msg: "Network error or server not reachable" };
+        }
+    }
+};
 
 
 export const deleteImages = async (url) => {

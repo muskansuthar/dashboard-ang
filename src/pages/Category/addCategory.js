@@ -2,8 +2,8 @@ import { Breadcrumbs, Button, Chip } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { emphasize, styled } from "@mui/material/styles";
-import { useContext, useState } from "react";
-import { FaCloudUploadAlt } from "react-icons/fa";
+import { useContext, useEffect, useState } from "react";
+import { FaCloudUploadAlt, FaRegImages } from "react-icons/fa";
 import { postData } from "../../utils/api";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useNavigate } from "react-router-dom";
@@ -34,12 +34,15 @@ const AddCategory = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formFields, setFormFields] = useState({
     name: "",
+    images: []
   });
+  const [files, setFiles] = useState([])
+  const [imgFiles, setimgFiles] = useState([])
+  const [previews, setPreviews] = useState([])
 
   const history = useNavigate();
 
   const context = useContext(MyContext);
-  const formData = new FormData();
 
   const changeInput = (e) => {
     setFormFields(() => ({
@@ -48,43 +51,98 @@ const AddCategory = () => {
     }));
   };
 
-  const addCategory = (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (!imgFiles) return;
 
-    formData.append("name", formFields.name);
+    let tmp = [];
+    for (let i = 0; i < imgFiles.length; i++) {
+      tmp.push(URL.createObjectURL(imgFiles[i]))
+    }
 
-    if (formFields.name !== "") {
-      setIsLoading(true);
+    const objectUrls = tmp;
+    setPreviews(objectUrls)
 
-      postData("/api/category/create", formFields).then((res) => {
-        if (res.error !== true) {
-          context.setAlertBox({
-            open: true,
-            msg: "The category is created!",
-            error: false,
-          });
-          setIsLoading(false);
-          context.fetchCategory();
-          history("/category");
+    for (let i = 0; i < objectUrls.length; i++) {
+      return () => {
+        URL.revokeObjectURL(objectUrls[i])
+      }
+    }
+  }, [imgFiles])
+
+
+  const onchangeFile = async (e) => {
+    try {
+      const imgArr = [];
+      const files = e.target.files;
+
+      for (let i = 0; i < files.length; i++) {
+        if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
+          setimgFiles(files)
+          imgArr.push(files[i]);
         } else {
-          setIsLoading(false);
           context.setAlertBox({
             open: true,
             error: true,
-            msg: res.msg,
+            msg: "Please select a valid JPG or PNG image file."
           });
-          setIsLoading(false);
-          context.fetchCategory();
-          history("/category");
+          return;
         }
-      });
-    } else {
+      }
+      setFiles(imgArr);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const addCategory = (e) => {
+    e.preventDefault();
+
+    if (formFields.name === "" || !files.length) {
       context.setAlertBox({
         open: true,
         error: true,
-        msg: "Please fill all the details",
+        msg: 'Please fill all the details and select at least one image'
       });
-      return false;
+      return;
+    }
+    setIsLoading(true);
+
+
+    try {
+      const formData = new FormData();
+      formData.append('name', formFields.name);
+
+      // Append all images
+      files.forEach((file) => {
+        formData.append('images', file);
+      });
+      postData("/api/category/create", formData).then((res) => {
+        if (res.error !== true) {
+          context.setAlertBox({
+            open: true,
+            error: false,
+            msg: "The Category is created!"
+          })
+          setIsLoading(false)
+          history("/category")
+        } else {
+          setIsLoading(false)
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: res.msg
+          })
+          setIsLoading(false)
+          history("/category")
+        }
+      })
+    } catch (error) {
+      setIsLoading(false);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "An unexpected error occurred",
+      });
     }
   };
 
@@ -126,16 +184,40 @@ const AddCategory = () => {
                     onChange={changeInput}
                   />
                 </div>
-                <Button type="submit" className="btn-blue btn-lg btn-big w-100">
-                  <FaCloudUploadAlt /> &nbsp;
-                  {isLoading === true ? (
-                    <CircularProgress color="inherit" className="loader" />
-                  ) : (
-                    "PUBLISH AND VIEW"
-                  )}
-                </Button>
               </div>
             </div>
+          </div>
+
+          <div className="card p-4 mt-0">
+            <div className="imagesUploadSec">
+              <h5 className="mb-4">Media And Pubblished</h5>
+
+              <div className="imgUploadBox d-flex align-items-center">
+
+                {
+                  previews?.length !== 0 && previews?.map((img, index) => {
+                    return (
+                      <div className="uploadBox" key={index}>
+                        <img src={img} className="w-100" alt="" />
+                      </div>
+                    )
+                  })
+                }
+
+                <div className="uploadBox">
+                  <input type="file" multiple onChange={(e) => onchangeFile(e)} name="images" />
+                  <div className="info">
+                    <FaRegImages />
+                    <h5>image upload</h5>
+                  </div>
+                </div>
+              </div>
+
+              <br />
+
+              <Button type="submit" className="btn-blue btn-lg btn-big w-100"><FaCloudUploadAlt /> &nbsp;{isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'}</Button>
+            </div>
+
           </div>
         </form>
       </div>

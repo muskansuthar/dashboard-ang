@@ -44,6 +44,7 @@ const EditProduct = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [imgFiles, setimgFiles] = useState([])
     const [previews, setPreviews] = useState([])
+    const [files, setFiles] = useState([])
     const [isSelectedFiles, setIsSelectedFiles] = useState(false)
 
     const [legfinishData, setLegfinishData] = useState([])
@@ -53,8 +54,6 @@ const EditProduct = () => {
 
     const [formFields, setFormFields] = useState({
         name: '',
-        description: '',
-        price: null,
         category: '',
         legfinish: '',
         legmaterial: '',
@@ -63,7 +62,7 @@ const EditProduct = () => {
         height: '',
         width: '',
         length: '',
-        weight: '',
+        cbm: "",
         isFeatured: null,
     });
 
@@ -71,7 +70,6 @@ const EditProduct = () => {
     let { id } = useParams();
     const history = useNavigate();
     const context = useContext(MyContext)
-    const formData = new FormData();
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -102,10 +100,8 @@ const EditProduct = () => {
         fetchDataFromApi(`/api/products/${id}`).then((res) => {
             setFormFields({
                 name: res.name,
-                description: res.description,
-                price: res.price,
                 height: res.height,
-                weight: res.weight,
+                cbm: res.cbm,
                 width: res.width,
                 length: res.length,
                 category: res.category?.name,
@@ -152,7 +148,7 @@ const EditProduct = () => {
             category: event.target.value
         }))
     };
-    
+
     const handleChangeLegfinish = (event) => {
         setLegfinishVal(event.target.value);
         setFormFields(() => ({
@@ -197,155 +193,96 @@ const EditProduct = () => {
         }))
     }
 
-    const onchangeFile = async (e, apiEndPoint) => {
+    const onchangeFile = async (e) => {
         try {
             const imgArr = [];
             const files = e.target.files;
 
             for (let i = 0; i < files.length; i++) {
-
                 if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
                     setimgFiles(files)
-
-                    const file = files[i]
-                    imgArr.push(file)
-                    formData.append('images', file)
+                    imgArr.push(files[i]);
                 } else {
                     context.setAlertBox({
                         open: true,
                         error: true,
                         msg: "Please select a valid JPG or PNG image file."
-                    })
+                    });
+                    return;
                 }
             }
+
             setIsSelectedFiles(true)
-            postData(apiEndPoint, formData).then((res) => {
-                // setOriginalUrls(res);
-                context.setAlertBox({
-                    open: true,
-                    error: false,
-                    msg: "images uploaded!"
-                })
-            })
+            setFiles(imgArr);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
 
     const editProduct = (e) => {
         e.preventDefault();
 
-        formData.append('name', formFields.name)
-        formData.append('description', formFields.description)
-        formData.append('price', formFields.price)
-        formData.append('category', formFields.category)
-        formData.append('legfinish', formFields.legfinish)
-        formData.append('legmaterial', formFields.legmaterial)
-        formData.append('topfinish', formFields.topfinish)
-        formData.append('topmaterial', formFields.topmaterial)
-        formData.append('weight', formFields.weight)
-        formData.append('height', formFields.height)
-        formData.append('length', formFields.length)
-        formData.append('width', formFields.width)
-        formData.append('isFeatured', formFields.isFeatured)
-
-        const updatedData = {
-        ...formFields,
-        category: categoryVal,  // Use _id if not changed
-        legfinish: legfinishVal,
-        legmaterial: legmaterialVal,
-        topfinish: topfinishVal,
-        topmaterial: topmaterialVal,
-    };
-
-        if (formFields.name === "") {
+        if (formFields.name === "" || formFields.length === "" || formFields.width === "" || formFields.height === "" || formFields.category === "" || formFields.legfinish === "" || formFields.legmaterial === "" || formFields.isFeatured === null || formFields.cbm === "") {
             context.setAlertBox({
                 open: true,
-                msg: 'please add product name',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.description === "") {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product description',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.price === null) {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product price',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.category === "") {
-            context.setAlertBox({
-                open: true,
-                msg: 'please select product category',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.legfinish === "") {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product legfinish',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.legmaterial === "") {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product legmaterial',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.weight === "") {
-            context.setAlertBox({
-                open: true,
-                msg: 'please add product weight',
-                error: true
-            })
-            return false;
-        }
-        if (formFields.isFeatured === null) {
-            context.setAlertBox({
-                open: true,
-                msg: 'please select product is a featured or not',
-                error: true
-            })
-            return false;
-        }
-        if (previews.length === 0) {
-            context.setAlertBox({
-                open: true,
-                msg: 'please select images',
-                error: true
-            })
-            return false;
+                msg: "Please fill all the details and select at least one image",
+                error: true,
+            });
+            return;
         }
 
+        setIsLoading(true);
 
+        try {
+            const formData = new FormData();
+            formData.append("name", formFields.name);
+            formData.append("category", categoryVal);
+            formData.append("legfinish", legfinishVal);
+            formData.append("legmaterial", legmaterialVal);
+            formData.append("topfinish", topfinishVal);
+            formData.append("topmaterial", topmaterialVal);
+            formData.append("width", formFields.width);
+            formData.append("height", formFields.height);
+            formData.append("length", formFields.length);
+            formData.append("cbm", formFields.cbm);
+            formData.append("isFeatured", formFields.isFeatured);
 
-        setIsLoading(true)
+            // Append all image previews
+            files.forEach((file) => {
+                formData.append('images', file);
+            });
 
-        editData(`/api/products/${id}`, updatedData).then((res) => {
+            setIsLoading(true)
+
+            editData(`/api/products/${id}`, formData).then((res) => {
+                if (res.error !== true) {
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: 'The product is Updated!'
+                    })
+                    setIsLoading(false)
+                    history("/products")
+                } else {
+                    setIsLoading(false)
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg
+                    })
+                    setIsLoading(false)
+                    history("/products")
+                }
+            });
+
+        } catch (error) {
+            setIsLoading(false);
             context.setAlertBox({
                 open: true,
-                msg: 'The product is Updated!',
-                error: false
-            })
-
-            setIsLoading(false)
-
-            history('/products')
-        })
+                error: true,
+                msg: "An unexpected error occurred",
+            });
+        }
 
     }
 
@@ -368,7 +305,7 @@ const EditProduct = () => {
                             deleteIcon={<ExpandMoreIcon />}
                         />
                         <StyledBreadcrumb
-                            label="Product Upload"
+                            label="Edit Product"
                             deleteIcon={<ExpandMoreIcon />}
                         />
                     </Breadcrumbs>
@@ -383,25 +320,6 @@ const EditProduct = () => {
                                 <div className="form-group">
                                     <h6>PRODUCT NAME</h6>
                                     <input type="text" name="name" value={formFields.name} onChange={inputChange} />
-                                </div>
-                                <div className="form-group">
-                                    <h6>DESCRIPTION</h6>
-                                    <textarea rows={5} cols={10} name="description" value={formFields.description} onChange={inputChange} />
-                                </div>
-
-                                <div className="row">
-                                    <div className="col">
-                                        <div className="form-group">
-                                            <h6>PRICE</h6>
-                                            <input type="text" name="price" value={formFields.price} onChange={inputChange} />
-                                        </div>
-                                    </div>
-                                    <div className="col">
-                                        <div className="form-group">
-                                            <h6>WEIGHT</h6>
-                                            <input type="text" name="weight" value={formFields.weight} onChange={inputChange} />
-                                        </div>
-                                    </div>
                                 </div>
                                 <div className="row">
                                     <div className="col">
@@ -420,6 +338,17 @@ const EditProduct = () => {
                                         <div className="form-group">
                                             <h6>HEIGHT</h6>
                                             <input type="text" name="height" value={formFields.height} onChange={inputChange} />
+                                        </div>
+                                    </div>
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>CBM</h6>
+                                            <input
+                                                type="text"
+                                                name="cbm"
+                                                value={formFields.cbm}
+                                                onChange={inputChange}
+                                            />
                                         </div>
                                     </div>
                                 </div>

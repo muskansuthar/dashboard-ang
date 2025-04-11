@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { FaClipboardCheck, FaProductHunt } from "react-icons/fa";
 import { FaAngleRight } from "react-icons/fa6";
+import { TbCircleLetterCFilled, TbCircleLetterHFilled, TbCircleLetterLFilled, TbCircleLetterMFilled, TbCircleLetterPFilled, TbCircleLetterTFilled } from "react-icons/tb";
 import { IoMdLogOut } from "react-icons/io";
 import { MdDashboard } from "react-icons/md";
 import { Link, NavLink, useNavigate } from "react-router-dom";
@@ -28,7 +28,7 @@ const Sidebar = () => {
             history("/login")
         }
     }, [])
-    
+
     return (
         <>
             <div className="sidebar">
@@ -44,7 +44,7 @@ const Sidebar = () => {
                     </li>
                     <li>
                         <Button className={`w-100 ${activeTab === 1 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(1)}>
-                            <span className="icon"><FaProductHunt /></span>
+                            <span className="icon"><TbCircleLetterPFilled /></span>
                             Products
                             <span className="arrow"><FaAngleRight /></span>
                         </Button>
@@ -57,7 +57,7 @@ const Sidebar = () => {
                     </li>
                     <li>
                         <Button className={`w-100 ${activeTab === 2 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(2)}>
-                            <span className="icon"><FaProductHunt /></span>
+                            <span className="icon"><TbCircleLetterCFilled /></span>
                             Category
                             <span className="arrow"><FaAngleRight /></span>
                         </Button>
@@ -70,7 +70,7 @@ const Sidebar = () => {
                     </li>
                     <li>
                         <Button className={`w-100 ${activeTab === 3 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(3)}>
-                            <span className="icon"><FaProductHunt /></span>
+                            <span className="icon"><TbCircleLetterTFilled /></span>
                             Top Material
                             <span className="arrow"><FaAngleRight /></span>
                         </Button>
@@ -83,7 +83,7 @@ const Sidebar = () => {
                     </li>
                     <li>
                         <Button className={`w-100 ${activeTab === 4 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(4)}>
-                            <span className="icon"><FaProductHunt /></span>
+                            <span className="icon"><TbCircleLetterTFilled /></span>
                             Top Finish
                             <span className="arrow"><FaAngleRight /></span>
                         </Button>
@@ -96,7 +96,7 @@ const Sidebar = () => {
                     </li>
                     <li>
                         <Button className={`w-100 ${activeTab === 5 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(5)}>
-                            <span className="icon"><FaProductHunt /></span>
+                            <span className="icon"><TbCircleLetterLFilled /></span>
                             Leg Finish
                             <span className="arrow"><FaAngleRight /></span>
                         </Button>
@@ -109,7 +109,7 @@ const Sidebar = () => {
                     </li>
                     <li>
                         <Button className={`w-100 ${activeTab === 6 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(6)}>
-                            <span className="icon"><FaProductHunt /></span>
+                            <span className="icon"><TbCircleLetterLFilled /></span>
                             Leg Material
                             <span className="arrow"><FaAngleRight /></span>
                         </Button>
@@ -122,79 +122,27 @@ const Sidebar = () => {
                     </li>
                     <li>
                         <Button className={`w-100 ${activeTab === 7 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(7)}>
-                            <span className="icon"><FaProductHunt /></span>
-                            Top
+                            <span className="icon"><TbCircleLetterHFilled /></span>
+                            Home Page Image
                             <span className="arrow"><FaAngleRight /></span>
                         </Button>
                         <div className={`submenuWrapper ${activeTab === 7 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
                             <ul className="submenu">
-                                <li><Link to="/top">Top List</Link></li>
-                                <li><Link to="/top/add">Add a Top</Link></li>
+                                <li><Link to="/homepageimage">Home Page Image</Link></li>
+                                <li><Link to="/homepageimage/add">Add Home Page Image</Link></li>
                             </ul>
                         </div>
                     </li>
                     <li>
                         <Button className={`w-100 ${activeTab === 8 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(8)}>
-                            <span className="icon"><FaProductHunt /></span>
-                            Edge
+                            <span className="icon"><TbCircleLetterMFilled /></span>
+                            Mobile Image
                             <span className="arrow"><FaAngleRight /></span>
                         </Button>
                         <div className={`submenuWrapper ${activeTab === 8 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
                             <ul className="submenu">
-                                <li><Link to="/edge">Edge List</Link></li>
-                                <li><Link to="/edge/add">Add a Edge</Link></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <Button className={`w-100 ${activeTab === 9 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(9)}>
-                            <span className="icon"><FaProductHunt /></span>
-                            Finish
-                            <span className="arrow"><FaAngleRight /></span>
-                        </Button>
-                        <div className={`submenuWrapper ${activeTab === 9 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
-                            <ul className="submenu">
-                                <li><Link to="/finish">Finish List</Link></li>
-                                <li><Link to="/finish/add">Add a Finish</Link></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <Button className={`w-100 ${activeTab === 10 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(10)}>
-                            <span className="icon"><FaProductHunt /></span>
-                            Product Top
-                            <span className="arrow"><FaAngleRight /></span>
-                        </Button>
-                        <div className={`submenuWrapper ${activeTab === 10 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
-                            <ul className="submenu">
-                                <li><Link to="/productTop">Product Top List</Link></li>
-                                <li><Link to="/productTop/add">Add Product Top</Link></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <Button className={`w-100 ${activeTab === 11 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(11)}>
-                            <span className="icon"><FaProductHunt /></span>
-                            Product Edge
-                            <span className="arrow"><FaAngleRight /></span>
-                        </Button>
-                        <div className={`submenuWrapper ${activeTab === 11 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
-                            <ul className="submenu">
-                                <li><Link to="/productEdge">Product Edge List</Link></li>
-                                <li><Link to="/productEdge/add">Add Product Edge</Link></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <Button className={`w-100 ${activeTab === 12 && isToggleSubmenu === true ? 'active' : ''}`} onClick={() => isOpenSubmenu(12)}>
-                            <span className="icon"><FaProductHunt /></span>
-                            Product Finish
-                            <span className="arrow"><FaAngleRight /></span>
-                        </Button>
-                        <div className={`submenuWrapper ${activeTab === 12 && isToggleSubmenu === true ? 'colapse' : 'colapsed'}`}>
-                            <ul className="submenu">
-                                <li><Link to="/productFinish">Product Finish List</Link></li>
-                                <li><Link to="/productFinish/add">Add Product Finish</Link></li>
+                                <li><Link to="/mobileimage">Mobile Image</Link></li>
+                                <li><Link to="/mobileimage/add">Add Mobile Image</Link></li>
                             </ul>
                         </div>
                     </li>

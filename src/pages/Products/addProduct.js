@@ -45,9 +45,9 @@ const ProductUpload = () => {
   const [isFeaturedValue, setIsFeaturedValue] = useState("");
   const [catData, setCatData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [files, setFiles] = useState([])
   const [imgFiles, setimgFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
-  const [originalUrls, setOriginalUrls] = useState([]);
 
   const [legfinishData, setLegfinishData] = useState([]);
   const [legmaterialData, setLegmaterialData] = useState([]);
@@ -56,8 +56,6 @@ const ProductUpload = () => {
 
   const [formFields, setFormFields] = useState({
     name: "",
-    description: "",
-    price: null,
     category: "",
     legfinish: "",
     legmaterial: "",
@@ -66,13 +64,12 @@ const ProductUpload = () => {
     height: "",
     width: "",
     length: "",
-    weight: "",
+    cbm: "",
     isFeatured: null,
   });
 
   const history = useNavigate();
   const context = useContext(MyContext);
-  const formData = new FormData();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -151,7 +148,7 @@ const ProductUpload = () => {
   };
 
   const handleChangeisFeaturedValue = (event) => {
-    setIsFeaturedValue(event.target.value);
+    setIsFeaturedValue(event.target.value); 
     setFormFields(() => ({
       ...formFields,
       isFeatured: event.target.value,
@@ -165,139 +162,93 @@ const ProductUpload = () => {
     }));
   };
 
-  const onchangeFile = async (e, apiEndPoint) => {
+  const onchangeFile = async (e) => {
     try {
       const imgArr = [];
       const files = e.target.files;
 
       for (let i = 0; i < files.length; i++) {
-        if (
-          files[i] &&
-          (files[i].type === "image/jpeg" ||
-            files[i].type === "image/jpg" ||
-            files[i].type === "image/png")
-        ) {
-          setimgFiles(files);
-
-          const file = files[i];
-          imgArr.push(file);
-          formData.append("images", file);
+        if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
+          setimgFiles(files)
+          imgArr.push(files[i]);
         } else {
           context.setAlertBox({
             open: true,
             error: true,
-            msg: "Please select a valid JPG or PNG image file.",
+            msg: "Please select a valid JPG or PNG image file."
           });
+          return;
         }
       }
-      postData(apiEndPoint, formData).then((res) => {
-        setOriginalUrls(res);
-        context.setAlertBox({
-          open: true,
-          error: false,
-          msg: "images uploaded!",
-        });
-      });
+      setFiles(imgArr);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const addProduct = (e) => {
+  const addProduct = async (e) => {
     e.preventDefault();
 
-    formData.append("name", formFields.name);
-    formData.append("description", formFields.description);
-    formData.append("price", formFields.price);
-    formData.append("category", formFields.category);
-    formData.append("legfinish", formFields.legfinish);
-    formData.append("legmaterial", formFields.legmaterial);
-    formData.append("topfinish", formFields.topfinish);
-    formData.append("topmaterial", formFields.topmaterial);
-    formData.append("weight", formFields.weight);
-    formData.append("height", formFields.height);
-    formData.append("length", formFields.length);
-    formData.append("width", formFields.width);
-    formData.append("isFeatured", formFields.isFeatured);
-
-    if (formFields.name === "") {
+    // Validate the fields
+    if (formFields.name === "" || formFields.length === "" || formFields.width === "" || formFields.height === "" ||  formFields.category === "" || formFields.legfinish === "" || formFields.legmaterial === "" || formFields.isFeatured === null || !files.length || formFields.cbm === "" ) {
       context.setAlertBox({
         open: true,
-        msg: "please add product name",
+        msg: "Please fill all the details and select at least one image",
         error: true,
       });
-      return false;
-    }
-    if (formFields.description === "") {
-      context.setAlertBox({
-        open: true,
-        msg: "please add product description",
-        error: true,
-      });
-      return false;
-    }
-    if (formFields.price === null) {
-      context.setAlertBox({
-        open: true,
-        msg: "please add product price",
-        error: true,
-      });
-      return false;
-    }
-    if (formFields.category === "") {
-      context.setAlertBox({
-        open: true,
-        msg: "please select product category",
-        error: true,
-      });
-      return false;
-    }
-    if (formFields.legfinish === "") {
-      context.setAlertBox({
-        open: true,
-        msg: "please add product legfinish",
-        error: true,
-      });
-      return false;
-    }
-    if (formFields.legmaterial === "") {
-      context.setAlertBox({
-        open: true,
-        msg: "please add product legmaterial",
-        error: true,
-      });
-      return false;
-    }
-    if (formFields.isFeatured === null) {
-      context.setAlertBox({
-        open: true,
-        msg: "please select product is a featured or not",
-        error: true,
-      });
-      return false;
-    }
-    if (previews.length === 0) {
-      context.setAlertBox({
-        open: true,
-        msg: "please select images",
-        error: true,
-      });
-      return false;
+      return;
     }
 
     setIsLoading(true);
 
-    postData("/api/products/create", formFields).then((res) => {
-      context.setAlertBox({
-        open: true,
-        msg: "The product is created!",
-        error: false,
+    try {
+      const formData = new FormData();
+      formData.append("name", formFields.name);
+      formData.append("category", formFields.category);
+      formData.append("legfinish", formFields.legfinish);
+      formData.append("legmaterial", formFields.legmaterial);
+      formData.append("topfinish", formFields.topfinish);
+      formData.append("topmaterial", formFields.topmaterial);
+      formData.append("width", formFields.width);
+      formData.append("height", formFields.height);
+      formData.append("length", formFields.length);
+      formData.append("cbm", formFields.cbm);
+      formData.append("isFeatured", formFields.isFeatured);
+
+      // Append all image previews
+      files.forEach((file) => {
+        formData.append('images', file);
       });
 
-      setIsLoading(false);
+      postData("/api/products/create", formData).then((res) => {
+        if (res.error !== true) {
+          context.setAlertBox({
+            open: true,
+            error: false,
+            msg: "The product is created!"
+          })
+          setIsLoading(false)
+          history("/products")
+        } else {
+          setIsLoading(false)
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: res.msg
+          })
+          setIsLoading(false)
+          history("/products")
+        }
+      });
 
-      history("/products");
-    });
+    } catch (error) {
+      setIsLoading(false);
+      context.setAlertBox({
+        open: true,
+        error: true,
+        msg: "An unexpected error occurred",
+      });
+    }
   };
 
   return (
@@ -340,41 +291,7 @@ const ProductUpload = () => {
                     onChange={inputChange}
                   />
                 </div>
-                <div className="form-group">
-                  <h6>DESCRIPTION</h6>
-                  <textarea
-                    rows={5}
-                    cols={10}
-                    name="description"
-                    value={formFields.description}
-                    onChange={inputChange}
-                  />
-                </div>
 
-                <div className="row">
-                  <div className="col">
-                    <div className="form-group">
-                      <h6>PRICE</h6>
-                      <input
-                        type="text"
-                        name="price"
-                        value={formFields.price}
-                        onChange={inputChange}
-                      />
-                    </div>
-                  </div>
-                  <div className="col">
-                    <div className="form-group">
-                      <h6>WEIGHT</h6>
-                      <input
-                        type="text"
-                        name="weight"
-                        value={formFields.weight}
-                        onChange={inputChange}
-                      />
-                    </div>
-                  </div>
-                </div>
                 <div className="row">
                   <div className="col">
                     <div className="form-group">
@@ -405,6 +322,17 @@ const ProductUpload = () => {
                         type="text"
                         name="height"
                         value={formFields.height}
+                        onChange={inputChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="form-group">
+                      <h6>CBM</h6>
+                      <input
+                        type="text"
+                        name="cbm"
+                        value={formFields.cbm}
                         onChange={inputChange}
                       />
                     </div>

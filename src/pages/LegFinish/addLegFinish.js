@@ -3,7 +3,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { emphasize, styled } from '@mui/material/styles';
 import { useContext, useState } from "react";
-import { postData } from "../../utils/api";
+import { postFeilds } from "../../utils/api";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
 import { MyContext } from "../../App";
@@ -65,7 +65,7 @@ const AddLegFinish = () => {
         if (formFields.name !== "") {
             setIsLoading(true)
 
-            postData('/api/legfinish/create', formFields).then(res => {
+            postFeilds('/api/legfinish/create', formFields).then(res => {
                 if (res.error !== true) {
                     context.setAlertBox({
                         open: true,

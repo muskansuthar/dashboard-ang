@@ -47,19 +47,13 @@ const AddProductTops = () => {
     const [files, setFiles] = useState([])
     const [imgFiles, setimgFiles] = useState([])
     const [previews, setPreviews] = useState([])
-    const [originalUrls, setOriginalUrls] = useState([])
-    const [isSelectedFiles, setIsSelectedFiles] = useState(false)
     const [topData, setTopData] = useState([])
     const [productData, setProductData] = useState([])
 
 
-    //for claudinary images 
-    // const [uploading, setUploading] = useState(false)
-
     const history = useNavigate();
 
     const context = useContext(MyContext)
-    const formData = new FormData();
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -73,7 +67,7 @@ const AddProductTops = () => {
     }, [])
 
     // for upload imges in local folder with multer
-    
+
     useEffect(() => {
         if (!imgFiles) return;
 
@@ -92,7 +86,7 @@ const AddProductTops = () => {
         }
     }, [imgFiles])
 
-    
+
     const handleChangeProduct = (event) => {
         setProductVal(event.target.value);
         setFormFields(() => ({
@@ -108,82 +102,159 @@ const AddProductTops = () => {
         }))
     };
 
-    const onchangeFile = async (e, apiEndPoint) => {
+    const onchangeFile = async (e) => {
         try {
             const imgArr = [];
             const files = e.target.files;
 
             for (let i = 0; i < files.length; i++) {
-
                 if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
                     setimgFiles(files)
-
-                    const file = files[i]
-                    imgArr.push(file)
-                    formData.append('images', file)
+                    imgArr.push(files[i]);
                 } else {
                     context.setAlertBox({
                         open: true,
                         error: true,
                         msg: "Please select a valid JPG or PNG image file."
-                    })
+                    });
+                    return;
                 }
-
             }
             setFiles(imgArr);
-            setIsSelectedFiles(true)
-            postData(apiEndPoint, formData).then((res) => {
-                setOriginalUrls(res);
-                context.setAlertBox({
-                    open: true,
-                    error: false,
-                    msg: "images uploaded!"
-                })
-            })
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
 
-    const addProducttop = (e) => {
-        e.preventDefault()
+    const addProducttop = async (e) => {
+        e.preventDefault();
 
-        formData.append('topId', formFields.topId)
-        formData.append('productId', formFields.productId)
-
-
-        if (formFields.topId !== "" && formFields.productId !== "" && isSelectedFiles !== false) {
-            setIsLoading(true)
-
-            postData('/api/producttop/create', formFields).then((res) => {
-                if (res.error !== true) {
-                    context.setAlertBox({
-                      open: true,
-                      msg: "The producttop is created!",
-                      error: false,
-                    });
-                    setIsLoading(false);
-                    history("/producttop");
-                  } else {
-                    setIsLoading(false);
-                    context.setAlertBox({
-                      open: true,
-                      error: true,
-                      msg: res.msg,
-                    });
-                    setIsLoading(false);
-                    history("/producttop");
-                  }
-            })
-        } else {
+        if (formFields.topId === "" || formFields.productId === "" || !files.length) {
             context.setAlertBox({
                 open: true,
                 error: true,
-                msg: 'Please fill all the details'
-            })
-            return false;
+                msg: 'Please fill all the details and select at least one image'
+            });
+            return;
         }
-    }
+
+        setIsLoading(true);
+
+        try {
+            const formData = new FormData();
+            formData.append('productId', formFields.productId);
+            formData.append('topId', formFields.topId);
+
+            // Append all images
+            files.forEach((file) => {
+                formData.append('images', file);
+            });
+            postData("/api/producttop/create-with-images", formData).then((res) => {
+                if (res.error !== true) {
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "The producttop is created!"
+                    })
+                    setIsLoading(false)
+                    history("/producttop")
+                } else {
+                    setIsLoading(false)
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg
+                    })
+                    setIsLoading(false)
+                    history("/producttop")
+                }
+            })
+        } catch (error) {
+            setIsLoading(false);
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "An unexpected error occurred",
+              });
+        }
+    };
+
+    // const onchangeFile = async (e, apiEndPoint) => {
+    //     try {
+    //         const imgArr = [];
+    //         const files = e.target.files;
+
+    //         for (let i = 0; i < files.length; i++) {
+
+    //             if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
+    //                 setimgFiles(files)
+
+    //                 const file = files[i]
+    //                 imgArr.push(file)
+    //                 formData.append('images', file)
+    //             } else {
+    //                 context.setAlertBox({
+    //                     open: true,
+    //                     error: true,
+    //                     msg: "Please select a valid JPG or PNG image file."
+    //                 })
+    //             }
+
+    //         }
+    //         setFiles(imgArr);
+    //         setIsSelectedFiles(true)
+    //         postData(apiEndPoint, formData).then((res) => {
+    //             setOriginalUrls(res);
+    //             context.setAlertBox({
+    //                 open: true,
+    //                 error: false,
+    //                 msg: "images uploaded!"
+    //             })
+    //         })
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
+
+    // const addProducttop = (e) => {
+    //     e.preventDefault()
+
+    //     formData.append('topId', formFields.topId)
+    //     formData.append('productId', formFields.productId)
+
+
+    //     if (formFields.topId !== "" && formFields.productId !== "" && isSelectedFiles !== false) {
+    //         setIsLoading(true)
+
+    //         postData('/api/producttop/create', formFields).then((res) => {
+    //             if (res.error !== true) {
+    //                 context.setAlertBox({
+    //                   open: true,
+    //                   msg: "The producttop is created!",
+    //                   error: false,
+    //                 });
+    //                 setIsLoading(false);
+    //                 history("/producttop");
+    //               } else {
+    //                 setIsLoading(false);
+    //                 context.setAlertBox({
+    //                   open: true,
+    //                   error: true,
+    //                   msg: res.msg,
+    //                 });
+    //                 setIsLoading(false);
+    //                 history("/producttop");
+    //               }
+    //         })
+    //     } else {
+    //         context.setAlertBox({
+    //             open: true,
+    //             error: true,
+    //             msg: 'Please fill all the details'
+    //         })
+    //         return false;
+    //     }
+    // }
 
 
 
@@ -216,8 +287,8 @@ const AddProductTops = () => {
                     <div className="row">
                         <div className="col-sm-12">
                             <div className="card p-4 mt-0">
-                            <h5 className="mb-4">Basic Information</h5>
-                            <div className="row">
+                                <h5 className="mb-4">Basic Information</h5>
+                                <div className="row">
                                     <div className="col">
                                         <div className="form-group">
                                             <h6>PRODUCT NAME</h6>

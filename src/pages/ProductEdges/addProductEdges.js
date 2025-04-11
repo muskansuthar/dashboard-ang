@@ -41,19 +41,17 @@ const AddProductEdges = () => {
     const [formFields, setFormFields] = useState({
         edgeId: '',
         images: [],
-        productId:""
+        productId: ""
     });
+    const [files, setFiles] = useState([])
     const [imgFiles, setimgFiles] = useState([])
     const [previews, setPreviews] = useState([])
-    const [originalUrls, setOriginalUrls] = useState([])
-    const [isSelectedFiles, setIsSelectedFiles] = useState(false)
     const [edgeData, setEdgeData] = useState([])
     const [productData, setProductData] = useState([])
 
     const history = useNavigate();
 
     const context = useContext(MyContext)
-    const formData = new FormData();
 
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -100,81 +98,159 @@ const AddProductEdges = () => {
         }))
     };
 
-    const onchangeFile = async (e, apiEndPoint) => {
+    const onchangeFile = async (e) => {
         try {
             const imgArr = [];
             const files = e.target.files;
 
             for (let i = 0; i < files.length; i++) {
-
                 if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
                     setimgFiles(files)
-
-                    const file = files[i]
-                    imgArr.push(file)
-                    formData.append('images', file)
+                    imgArr.push(files[i]);
                 } else {
                     context.setAlertBox({
                         open: true,
                         error: true,
                         msg: "Please select a valid JPG or PNG image file."
-                    })
+                    });
+                    return;
                 }
-
             }
-            setIsSelectedFiles(true)
-            postData(apiEndPoint, formData).then((res) => {
-                setOriginalUrls(res);
-                context.setAlertBox({
-                    open: true,
-                    error: false,
-                    msg: "images uploaded!"
-                })
-            })
+            setFiles(imgArr);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
 
-    const addProductedge = (e) => {
-        e.preventDefault()
+    const addProductedge = async (e) => {
+        e.preventDefault();
 
-        formData.append('edgeId', formFields.edgeId)
-        formData.append('productId', formFields.productId)
-
-
-        if (formFields.edgeId !== "" && formFields.productId !== "" && isSelectedFiles !== false) {
-            setIsLoading(true)
-
-            postData('/api/productedge/create', formFields).then(res => {
-                if (res.error !== true) {
-                    context.setAlertBox({
-                      open: true,
-                      msg: "The productedge is created!",
-                      error: false,
-                    });
-                    setIsLoading(false);
-                    history("/productedge");
-                  } else {
-                    setIsLoading(false);
-                    context.setAlertBox({
-                      open: true,
-                      error: true,
-                      msg: res.msg,
-                    });
-                    setIsLoading(false);
-                    history("/productedge");
-                  }
-            })
-        } else {
+        if (formFields.edgeId === "" || formFields.productId === "" || !files.length) {
             context.setAlertBox({
                 open: true,
                 error: true,
-                msg: 'Please fill all the details'
-            })
-            return false;
+                msg: 'Please fill all the details and select at least one image'
+            });
+            return;
         }
-    }
+
+        setIsLoading(true);
+
+        try {
+            const formData = new FormData();
+            formData.append('productId', formFields.productId);
+            formData.append('edgeId', formFields.edgeId);
+
+            // Append all images
+            files.forEach((file) => {
+                formData.append('images', file);
+            });
+            postData("/api/productedge/create-with-images", formData).then((res) => {
+                if (res.error !== true) {
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: "The productedge is created!"
+                    })
+                    setIsLoading(false)
+                    history("/productedge")
+                } else {
+                    setIsLoading(false)
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg
+                    })
+                    setIsLoading(false)
+                    history("/productedge")
+                }
+            })
+        } catch (error) {
+            setIsLoading(false);
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: "An unexpected error occurred",
+            });
+        }
+    };
+
+
+    // const onchangeFile = async (e, apiEndPoint) => {
+    //     try {
+    //         const imgArr = [];
+    //         const files = e.target.files;
+
+    //         for (let i = 0; i < files.length; i++) {
+
+    //             if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
+    //                 setimgFiles(files)
+
+    //                 const file = files[i]
+    //                 imgArr.push(file)
+    //                 formData.append('images', file)
+    //             } else {
+    //                 context.setAlertBox({
+    //                     open: true,
+    //                     error: true,
+    //                     msg: "Please select a valid JPG or PNG image file."
+    //                 })
+    //             }
+
+    //         }
+    //         setIsSelectedFiles(true)
+    //         postData(apiEndPoint, formData).then((res) => {
+    //             setOriginalUrls(res);
+    //             context.setAlertBox({
+    //                 open: true,
+    //                 error: false,
+    //                 msg: "images uploaded!"
+    //             })
+    //         })
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
+
+    // const addProductedge = (e) => {
+    //     e.preventDefault()
+
+    //     formData.append('edgeId', formFields.edgeId)
+    //     formData.append('productId', formFields.productId)
+
+
+    //     if (formFields.edgeId !== "" && formFields.productId !== "" && isSelectedFiles !== false) {
+    //         setIsLoading(true)
+
+    //         postData('/api/productedge/create', formFields).then(res => {
+    //             if (res.error !== true) {
+    //                 context.setAlertBox({
+    //                   open: true,
+    //                   msg: "The productedge is created!",
+    //                   error: false,
+    //                 });
+    //                 setIsLoading(false);
+    //                 history("/productedge");
+    //               } else {
+    //                 setIsLoading(false);
+    //                 context.setAlertBox({
+    //                   open: true,
+    //                   error: true,
+    //                   msg: res.msg,
+    //                 });
+    //                 setIsLoading(false);
+    //                 history("/productedge");
+    //               }
+    //         })
+    //     } else {
+    //         context.setAlertBox({
+    //             open: true,
+    //             error: true,
+    //             msg: 'Please fill all the details'
+    //         })
+    //         return false;
+    //     }
+    // }
 
 
 
@@ -205,10 +281,10 @@ const AddProductEdges = () => {
 
                 <form className="form" onSubmit={addProductedge}>
                     <div className="row">
-                    <div className="col-sm-12">
+                        <div className="col-sm-12">
                             <div className="card p-4 mt-0">
-                            <h5 className="mb-4">Basic Information</h5>
-                            <div className="row">
+                                <h5 className="mb-4">Basic Information</h5>
+                                <div className="row">
                                     <div className="col">
                                         <div className="form-group">
                                             <h6>PRODUCT NAME</h6>
@@ -260,37 +336,37 @@ const AddProductEdges = () => {
                             </div>
                         </div>
                     </div>
-                                <div className="card p-4 mt-0">
-                                    <div className="imagesUploadSec">
-                                        <h5 className="mb-4">Media And Pubblished</h5>
+                    <div className="card p-4 mt-0">
+                        <div className="imagesUploadSec">
+                            <h5 className="mb-4">Media And Pubblished</h5>
 
-                                        <div className="imgUploadBox d-flex align-items-center">
+                            <div className="imgUploadBox d-flex align-items-center">
 
-                                            {
-                                                previews?.length !== 0 && previews?.map((img, index) => {
-                                                    return (
-                                                        <div className="uploadBox" key={index}>
-                                                            <img src={img} className="w-100" alt="" />
-                                                        </div>
-                                                    )
-                                                })
-                                            }
-
-                                            <div className="uploadBox">
-                                                <input type="file" multiple onChange={(e) => onchangeFile(e, '/api/productedge/upload')} name="images" />
-                                                <div className="info">
-                                                    <FaRegImages />
-                                                    <h5>image upload</h5>
-                                                </div>
+                                {
+                                    previews?.length !== 0 && previews?.map((img, index) => {
+                                        return (
+                                            <div className="uploadBox" key={index}>
+                                                <img src={img} className="w-100" alt="" />
                                             </div>
-                                        </div>
+                                        )
+                                    })
+                                }
 
-                                        <br />
-
-                                        <Button type="submit" className="btn-blue btn-lg btn-big w-100"><FaCloudUploadAlt /> &nbsp;{isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'}</Button>
+                                <div className="uploadBox">
+                                    <input type="file" multiple onChange={(e) => onchangeFile(e, '/api/productedge/upload')} name="images" />
+                                    <div className="info">
+                                        <FaRegImages />
+                                        <h5>image upload</h5>
                                     </div>
-
                                 </div>
+                            </div>
+
+                            <br />
+
+                            <Button type="submit" className="btn-blue btn-lg btn-big w-100"><FaCloudUploadAlt /> &nbsp;{isLoading === true ? <CircularProgress color="inherit" className="loader" /> : 'PUBLISH AND VIEW'}</Button>
+                        </div>
+
+                    </div>
                 </form>
             </div>
         </>
