@@ -1,4 +1,4 @@
-import { Breadcrumbs, Button, Chip, Pagination } from "@mui/material";
+import { Breadcrumbs, Button, Chip } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
@@ -49,7 +49,7 @@ const TopFinish = () => {
     }, [])
 
 
-    const deleteTopFin = (id) => {
+    const deleteTopFinish = (id) => {
         context.setProgress(40)
         deleteData(`/api/topfinish/${id}`).then(() => {
             context.setProgress(100)
@@ -108,7 +108,7 @@ const TopFinish = () => {
                                                 <td>{item.name}</td>
                                                 <td>
                                                     <div className="actions d-flex align-items-center">
-                                                        <Button className="error" color="error" onClick={() => deleteTopFin(item._id)}><MdDelete /></Button>
+                                                        <Button className="error" color="error" onClick={() => deleteTopFinish(item._id)}><MdDelete /></Button>
                                                     </div>
                                                 </td>
                                             </tr>

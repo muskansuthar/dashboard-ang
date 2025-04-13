@@ -8,7 +8,7 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
 import CircularProgress from '@mui/material/CircularProgress';
-import { postData } from "../../utils/api";
+import { postFeilds } from "../../utils/api";
 
 
 const Login = () => {
@@ -42,65 +42,65 @@ const Login = () => {
     }
     const signIn = (e) => {
         e.preventDefault();
-
-        if (formfields.email === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "email can not be blank!"
-            })
-            return false;
+      
+        const { email, password } = formfields;
+      
+        if (!email || !password) {
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: "Please enter both email and password!"
+          });
+          return;
         }
-        if (formfields.password === "") {
-            context.setAlertBox({
-                open: true,
-                error: true,
-                msg: "password can not be blank!"
-            })
-            return false;
-        }
-
-        setIsLoading(true)
-        postData("/api/user/signin", formfields).then((res) => {
+      
+        setIsLoading(true);
+      
+        try {
+          postFeilds("/api/user/signin", formfields).then((res) => {
             console.log("Response received:", res);
-            try {
-
-                if (res.error !== true) {
-                    localStorage.setItem("token", res.token);
-
-                    const user = {
-                        userId: res.user?._id,
-                        name: res.user?.name,
-                        email: res.user?.email
-                    }
-
-                    localStorage.setItem("user", JSON.stringify(user));
-
-                    context.setAlertBox({
-                        open: true,
-                        error: false,
-                        msg: "User login Successfully!"
-                    })
-
-                    setTimeout(() => {
-                        setIsLoading(false)
-                        window.location.href = "/"
-                    }, 2000)
-                } else {
-                    setIsLoading(false)
-                    context.setAlertBox({
-                        open: true,
-                        error: true,
-                        msg: res.msg
-                    })
-                }
-
-            } catch (error) {
-                setIsLoading(false)
-                console.log(error)
+      
+            if (res.error !== true) {
+              localStorage.setItem("token", res.token);
+      
+              const user = {
+                userId: res.user?._id,
+                name: res.user?.name,
+                email: res.user?.email
+              };
+      
+              localStorage.setItem("user", JSON.stringify(user));
+      
+              context.setAlertBox({
+                open: true,
+                error: false,
+                msg: "User logged in successfully!"
+              });
+      
+              setTimeout(() => {
+                setIsLoading(false);
+                window.location.href = "/";
+              }, 2000);
+            } else {
+              setIsLoading(false);
+              context.setAlertBox({
+                open: true,
+                error: true,
+                msg: res.msg
+              });
             }
-        })
-    }
+          });
+        } catch (error) {
+          setIsLoading(false);
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: "An unexpected error occurred",
+          });
+          console.log(error);
+        }
+      };
+      
 
     return (
         <>
@@ -138,8 +138,6 @@ const Login = () => {
                             </div>
 
                             <div className="form-group text-center mb-0">
-                                <Link to={'/forgot-password'} className="link">FORGOT PASSWORD</Link>
-
                                 <div className="d-flex align-items-center justify-content-center or mt-3 mb-3">
                                     <span className="line"></span>
                                     <span className="txt">or</span>

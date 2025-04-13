@@ -42,7 +42,6 @@ const AddLegFinish = () => {
     const history = useNavigate();
 
     const context = useContext(MyContext)
-    const formData = new FormData();
 
 
 
@@ -57,44 +56,50 @@ const AddLegFinish = () => {
     }
 
     const addLegfinish = (e) => {
-        e.preventDefault()
-
-        formData.append('name', formFields.name)
-
-
-        if (formFields.name !== "") {
-            setIsLoading(true)
-
-            postFeilds('/api/legfinish/create', formFields).then(res => {
-                if (res.error !== true) {
-                    context.setAlertBox({
-                        open: true,
-                        msg: 'The legfinish is created!',
-                        error: false
-                    })
-                    setIsLoading(false)
-                    history('/legfinish')
-                } else {
-                    setIsLoading(false)
-                    context.setAlertBox({
-                        open: true,
-                        error: true,
-                        msg: res.msg
-                    })
-                    setIsLoading(false)
-                    history('/legfinish')
-                }
-            })
-        } else {
-            context.setAlertBox({
+        e.preventDefault();
+      
+        if (!formFields.name) {
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: 'Please fill in the name field',
+          });
+          return;
+        }
+      
+        setIsLoading(true);
+      
+        try {
+          postFeilds('/api/legfinish/create', formFields).then((res) => {
+            if (res.error !== true) {
+              context.setAlertBox({
+                open: true,
+                error: false,
+                msg: 'The legfinish is created!',
+              });
+              setIsLoading(false);
+              history('/legfinish');
+            } else {
+              setIsLoading(false);
+              context.setAlertBox({
                 open: true,
                 error: true,
-                msg: 'Please fill all the details'
-            })
-            return false;
+                msg: res.msg,
+              });
+              history('/legfinish');
+            }
+          });
+        } catch (error) {
+          setIsLoading(false);
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: 'An unexpected error occurred',
+          });
+          console.log(error);
         }
-    }
-
+      };
+      
 
 
     return (

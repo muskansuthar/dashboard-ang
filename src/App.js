@@ -32,18 +32,6 @@ import AddLegMaterial from "./pages/LegMaterial/addLegMaterial";
 import LegMaterial from "./pages/LegMaterial/legMaterialList";
 import LegFinish from "./pages/LegFinish/legFinishList";
 import AddLegFinish from "./pages/LegFinish/addLegFinish";
-import Top from "./pages/Top/topList";
-import AddTop from "./pages/Top/addTop";
-import Finish from "./pages/Finish/finishList";
-import AddFinish from "./pages/Finish/addFinish";
-import AddEdge from "./pages/Edge/addEdge";
-import Edge from "./pages/Edge/edgeList";
-import AddProductTops from "./pages/ProductTops/addProductTops";
-import ProductTops from "./pages/ProductTops/productTopsList";
-import AddProductEdges from "./pages/ProductEdges/addProductEdges";
-import ProductEdges from "./pages/ProductEdges/productEdgesList";
-import AddProductFinish from "./pages/ProductFinishes/addProductFinish";
-import ProductFinish from "./pages/ProductFinishes/productFinishList";
 
 const MyContext = createContext();
 
@@ -264,42 +252,6 @@ function App() {
                 path="/topMaterial/add"
                 exact={true}
                 element={<AddTopMaterial />}
-              />
-              <Route path="/top" exact={true} element={<Top />} />
-              <Route path="/top/add" exact={true} element={<AddTop />} />
-              <Route path="/edge" exact={true} element={<Edge />} />
-              <Route path="/edge/add" exact={true} element={<AddEdge />} />
-              <Route path="/finish" exact={true} element={<Finish />} />
-              <Route path="/finish/add" exact={true} element={<AddFinish />} />
-              <Route
-                path="/productTop"
-                exact={true}
-                element={<ProductTops />}
-              />
-              <Route
-                path="/productTop/add"
-                exact={true}
-                element={<AddProductTops />}
-              />
-              <Route
-                path="/productEdge"
-                exact={true}
-                element={<ProductEdges />}
-              />
-              <Route
-                path="/productEdge/add"
-                exact={true}
-                element={<AddProductEdges />}
-              />
-              <Route
-                path="/productFinish"
-                exact={true}
-                element={<ProductFinish />}
-              />
-              <Route
-                path="/productFinish/add"
-                exact={true}
-                element={<AddProductFinish />}
               />
             </Routes>
           </div>

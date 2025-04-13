@@ -8,10 +8,8 @@ import { Button } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { FaPhoneAlt, FaUserCircle } from "react-icons/fa";
 import { IoShieldCheckmarkSharp } from "react-icons/io5";
-import FormControlLabel from '@mui/material/FormControlLabel';
 import CircularProgress from '@mui/material/CircularProgress';
-import Checkbox from '@mui/material/Checkbox';
-import { postData } from "../../utils/api";
+import { postFeilds } from "../../utils/api";
 
 
 const SignUp = () => {
@@ -50,87 +48,59 @@ const SignUp = () => {
     }
     const signUp = (e) => {
         e.preventDefault();
-
-        try {
-            if (formfields.name === "") {
-                context.setAlertBox({
-                    open: true,
-                    error: true,
-                    msg: "Name can not be blank!"
-                })
-                return false;
-            }
-            if (formfields.email === "") {
-                context.setAlertBox({
-                    open: true,
-                    error: true,
-                    msg: "email can not be blank!"
-                })
-                return false;
-            }
-            if (formfields.phone === "") {
-                context.setAlertBox({
-                    open: true,
-                    error: true,
-                    msg: "phone can not be blank!"
-                })
-                return false;
-            }
-            if (formfields.password === "") {
-                context.setAlertBox({
-                    open: true,
-                    error: true,
-                    msg: "password can not be blank!"
-                })
-                return false;
-            }
-            if (formfields.confirmPassword === "") {
-                context.setAlertBox({
-                    open: true,
-                    error: true,
-                    msg: "confirm password can not be blank!"
-                })
-                return false;
-            }
-
-            if (formfields.confirmPassword !== formfields.password) {
-                context.setAlertBox({
-                    open: true,
-                    error: true,
-                    msg: "password not match"
-                })
-                return false;
-            }
-
-            setIsLoading(true)
-
-            postData("/api/user/signup", formfields).then((res) => {
-                if (res.error !== true) {
-                    context.setAlertBox({
-                        open: true,
-                        error: false,
-                        msg: "Register Successfully!" 
-                    })
-
-
-                    setTimeout(() => {
-                        setIsLoading(false)
-                        history("/login")
-                    }, 2000)
-                } else {
-                    setIsLoading(false)
-                    context.setAlertBox({
-                        open: true,
-                        error: true,
-                        msg: res.msg
-                    })
-                }
-            })
-        } catch (error) {
-            setIsLoading(false)
-            console.log(error)
+      
+        const { name, email, phone, password, confirmPassword } = formfields;
+      
+        if (!name || !email || !phone || !password || !confirmPassword) {
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: "Please fill in all the fields!"
+          });
+          return;
         }
-    }
+      
+        if (password !== confirmPassword) {
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: "Passwords do not match!"
+          });
+          return;
+        }
+      
+        setIsLoading(true);
+      
+        try {
+          postFeilds("/api/user/signup", formfields).then((res) => {
+            if (res.error !== true) {
+              context.setAlertBox({
+                open: true,
+                error: false,
+                msg: "Registered Successfully!"
+              });
+              setIsLoading(false);
+              history("/login");
+            } else {
+              setIsLoading(false);
+              context.setAlertBox({
+                open: true,
+                error: true,
+                msg: res.msg
+              });
+            }
+          });
+        } catch (error) {
+          setIsLoading(false);
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: "An unexpected error occurred",
+          });
+          console.log(error);
+        }
+      };
+      
 
     return (
         <>
@@ -177,8 +147,6 @@ const SignUp = () => {
                                             }
                                         </span>
                                     </div>
-
-                                    <FormControlLabel control={<Checkbox />} label="I agree to the all Terms & Condiotions" />
 
                                     <div className="form-group">
                                         <Button type="submit" className="btn-blue btn-lg w-100 btn-big">

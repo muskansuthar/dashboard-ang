@@ -6,8 +6,9 @@ import { emphasize, styled } from '@mui/material/styles';
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MyContext } from "../../App";
-import { fetchDataFromApi } from "../../utils/api";
+import { deleteData, fetchDataFromApi } from "../../utils/api";
 import { FaPencilAlt } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
 
 //breadcrump code
@@ -48,6 +49,23 @@ const Mobileimage = () => {
             context.setProgress(100)
         })
     }, [])
+
+    const deleteMobImg = (id) => {
+            context.setProgress(40)
+            deleteData(`/api/mobileimg/${id}`).then(() => {
+                context.setProgress(100)
+                context.setAlertBox({
+                    open: true,
+                    error: true,
+                    msg: 'Mobile image Deleted!'
+                })
+                fetchDataFromApi('/api/mobileimg').then(res => {
+                    setMobileimage(res)
+                });
+            }).catch(err => {
+                console.error("Error deleting topfinish:", err);
+            });
+        };
 
     return (
         <>
@@ -104,6 +122,9 @@ const Mobileimage = () => {
                                                                 <FaPencilAlt />
                                                             </Button>
                                                         </Link>
+                                                        <div className="actions d-flex align-items-center">
+                                                            <Button className="error" color="error" onClick={() => deleteMobImg(item._id)}><MdDelete /></Button>
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>

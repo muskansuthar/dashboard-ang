@@ -6,8 +6,9 @@ import { emphasize, styled } from '@mui/material/styles';
 import HomeIcon from "@mui/icons-material/Home";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { MyContext } from "../../App";
-import { fetchDataFromApi } from "../../utils/api";
+import { deleteData, fetchDataFromApi } from "../../utils/api";
 import { FaPencilAlt } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
 
 //breadcrump code
@@ -48,6 +49,23 @@ const Homepageimage = () => {
             context.setProgress(100)
         })
     }, [])
+
+      const deleteHomeImg = (id) => {
+                context.setProgress(40)
+                deleteData(`/api/homepageimg/${id}`).then(() => {
+                    context.setProgress(100)
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: 'Home page image Deleted!'
+                    })
+                    fetchDataFromApi('/api/homepageimg').then(res => {
+                        setHomepageimage(res)
+                    });
+                }).catch(err => {
+                    console.error("Error deleting Home page image", err);
+                });
+            };
 
     return (
         <>
@@ -104,6 +122,9 @@ const Homepageimage = () => {
                                                                 <FaPencilAlt />
                                                             </Button>
                                                         </Link>
+                                                        <div className="actions d-flex align-items-center">
+                                                            <Button className="error" color="error" onClick={() => deleteHomeImg(item._id)}><MdDelete /></Button>
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>

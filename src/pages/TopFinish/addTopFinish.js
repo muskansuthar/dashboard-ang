@@ -43,7 +43,6 @@ const AddTopFinish = () => {
     const history = useNavigate();
 
     const context = useContext(MyContext)
-    const formData = new FormData();
 
 
     const changeInput = (e) => {
@@ -57,43 +56,50 @@ const AddTopFinish = () => {
     }
 
     const addTopfinish = (e) => {
-        e.preventDefault()
+        e.preventDefault();
 
-        formData.append('name', formFields.name)
-
-
-        if (formFields.name !== "") {
-            setIsLoading(true)
-
-            postFeilds('/api/topfinish/create', formFields).then(res => {
-                if (res.error !== true) {
-                    context.setAlertBox({
-                        open: true,
-                        msg: 'The topfinish is created!',
-                        error: false
-                    })
-                    setIsLoading(false)
-                    history('/topfinish')
-                } else {
-                    setIsLoading(false)
-                    context.setAlertBox({
-                        open: true,
-                        error: true,
-                        msg: res.msg
-                    })
-                    setIsLoading(false)
-                    history('/topfinish')
-                }
-            })
-        } else {
+        if (!formFields.name) {
             context.setAlertBox({
                 open: true,
                 error: true,
-                msg: 'Please fill all the details'
-            })
-            return false;
+                msg: 'Please fill in the name field',
+            });
+            return;
         }
-    }
+
+        setIsLoading(true);
+
+        try {
+            postFeilds('/api/topfinish/create', formFields).then((res) => {
+                if (res.error !== true) {
+                    context.setAlertBox({
+                        open: true,
+                        error: false,
+                        msg: 'The topfinish is created!',
+                    });
+                    setIsLoading(false);
+                    history('/topfinish');
+                } else {
+                    setIsLoading(false);
+                    context.setAlertBox({
+                        open: true,
+                        error: true,
+                        msg: res.msg,
+                    });
+                    history('/topfinish');
+                }
+            });
+        } catch (error) {
+            setIsLoading(false);
+            context.setAlertBox({
+                open: true,
+                error: true,
+                msg: 'An unexpected error occurred',
+            });
+            console.log(error);
+        }
+    };
+
 
     return (
         <>

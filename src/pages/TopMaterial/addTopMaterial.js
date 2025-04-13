@@ -42,7 +42,6 @@ const AddTopMaterial = () => {
     const history = useNavigate();
 
     const context = useContext(MyContext)
-    const formData = new FormData();
 
     const changeInput = (e) => {
         setFormFields(() => (
@@ -55,42 +54,50 @@ const AddTopMaterial = () => {
     }
 
     const addTopmaterial = (e) => {
-        e.preventDefault()
-
-        formData.append('name', formFields.name)
-
-        if (formFields.name !== "") {
-            setIsLoading(true)
-
-            postFeilds('/api/topmaterial/create', formFields).then(res => {
-                if (res.error !== true) {
-                    context.setAlertBox({
-                        open: true,
-                        msg: 'The topmaterial is created!',
-                        error: false
-                    })
-                    setIsLoading(false)
-                    history('/topmaterial')
-                } else {
-                    setIsLoading(false)
-                    context.setAlertBox({
-                        open: true,
-                        error: true,
-                        msg: res.msg
-                    })
-                    setIsLoading(false)
-                    history('/topmaterial')
-                }
-            })
-        } else {
-            context.setAlertBox({
+        e.preventDefault();
+      
+        if (!formFields.name) {
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: 'Please fill in the name field',
+          });
+          return;
+        }
+      
+        setIsLoading(true);
+      
+        try {
+          postFeilds('/api/topmaterial/create', formFields).then((res) => {
+            if (res.error !== true) {
+              context.setAlertBox({
+                open: true,
+                error: false,
+                msg: 'The topmaterial is created!',
+              });
+              setIsLoading(false);
+              history('/topmaterial');
+            } else {
+              setIsLoading(false);
+              context.setAlertBox({
                 open: true,
                 error: true,
-                msg: 'Please fill all the details'
-            })
-            return false;
+                msg: res.msg,
+              });
+              history('/topmaterial');
+            }
+          });
+        } catch (error) {
+          setIsLoading(false);
+          context.setAlertBox({
+            open: true,
+            error: true,
+            msg: 'An unexpected error occurred',
+          });
+          console.log(error);
         }
-    }
+      };
+      
 
     return (
         <>

@@ -4,7 +4,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { emphasize, styled } from '@mui/material/styles';
 import { useContext, useEffect, useState } from "react";
 import { FaCloudUploadAlt, FaRegImages } from "react-icons/fa";
-import { editData, fetchDataFromApi, postData } from "../../utils/api";
+import { editData, fetchDataFromApi } from "../../utils/api";
 import { MyContext } from "../../App";
 import { useNavigate, useParams } from "react-router-dom";
 
