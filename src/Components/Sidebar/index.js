@@ -152,7 +152,7 @@ const Sidebar = () => {
 
                 <div className="logoutWrapper">
                     <div className="logoutBox">
-                        <Button variant="contained"><IoMdLogOut /> Logout</Button>
+                        <Button variant="contained" className="bg-broun"><IoMdLogOut /> Logout</Button>
                     </div>
                 </div>
 

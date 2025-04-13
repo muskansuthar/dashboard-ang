@@ -62,3 +62,9 @@
   
     .form .col{max-width: 100% !important; flex: 0 0 100% !important;}
   }
+
+  @media (max-width: 400px) {
+    .loginSection .loginBox {
+      width: 100%;
+    }
+  }

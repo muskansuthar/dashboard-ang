@@ -88,6 +88,7 @@ const SignUp = () => {
                 error: true,
                 msg: res.msg
               });
+              history("/login");
             }
           });
         } catch (error) {
