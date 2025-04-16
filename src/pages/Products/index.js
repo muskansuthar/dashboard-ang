@@ -171,6 +171,7 @@ const Products = () => {
                   <th>TOP FINISH</th>
                   <th>TOP MATERIAL</th>
                   <th>CBM</th>
+                  <th>CODE</th>
                   <th>HEIGHT</th>
                   <th>WIDTH</th>
                   <th>LENGTH</th>
@@ -204,6 +205,7 @@ const Products = () => {
                         <td>{item?.topfinish?.name}</td>
                         <td>{item?.topmaterial?.name}</td>
                         <td>{item?.cbm}</td>
+                        <td>{item?.code}</td>
                         <td>{item?.height}</td>
                         <td>{item?.width}</td>
                         <td>{item?.length}</td>

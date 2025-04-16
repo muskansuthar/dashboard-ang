@@ -63,6 +63,7 @@ const EditProduct = () => {
         width: '',
         length: '',
         cbm: "",
+        code: "",
         isFeatured: null,
     });
 
@@ -99,26 +100,27 @@ const EditProduct = () => {
         context.setProgress(20)
         fetchDataFromApi(`/api/products/${id}`).then((res) => {
             setFormFields({
-                name: res.name,
-                height: res.height,
-                cbm: res.cbm,
-                width: res.width,
-                length: res.length,
-                category: res.category?.name,
-                legfinish: res.legfinish?.name,
-                legmaterial: res.legmaterial?.name,
-                topfinish: res.topfinish?.name,
-                topmaterial: res.topmaterial?.name,
-                isFeatured: res.isFeatured,
+                name: res.name || '',
+                height: res.height || '',
+                cbm: res.cbm || '',
+                code: res.code || '',
+                width: res.width || '',
+                length: res.length || '',
+                category: res.category?.name || '',
+                legfinish: res.legfinish?.name || '',
+                legmaterial: res.legmaterial?.name || '',
+                topfinish: res.topfinish?.name || '',
+                topmaterial: res.topmaterial?.name || '',
+                isFeatured: res.isFeatured !== undefined ? res.isFeatured : '',
             })
 
-            setcategoryVal(res.category?._id)
-            setLegfinishVal(res.legfinish?._id)
-            setLegmaterialVal(res.legmaterial?._id)
-            setTopfinishVal(res.topfinish?._id)
-            setTopmaterialVal(res.topmaterial?._id)
-            setIsFeaturedValue(res.isFeatured)
-            setPreviews(res.images)
+            setcategoryVal(res.category?._id || '')
+            setLegfinishVal(res.legfinish?._id || '')
+            setLegmaterialVal(res.legmaterial?._id || '')
+            setTopfinishVal(res.topfinish?._id || '')
+            setTopmaterialVal(res.topmaterial?._id || '')
+            setIsFeaturedValue(res.isFeatured !== undefined ? res.isFeatured : '')
+            setPreviews(res.images || [])
             context.setProgress(100)
         })
     }, [])
@@ -222,7 +224,7 @@ const EditProduct = () => {
     const editProduct = (e) => {
         e.preventDefault();
 
-        if (formFields.name === "" || formFields.length === "" || formFields.width === "" || formFields.height === "" || formFields.category === "" || formFields.legfinish === "" || formFields.legmaterial === "" || formFields.isFeatured === null || formFields.cbm === "") {
+        if (formFields.name === "" || formFields.length === "" || formFields.width === "" || formFields.height === "" || formFields.category === "" || formFields.isFeatured === null || formFields.cbm === "" || formFields.code === "") {
             context.setAlertBox({
                 open: true,
                 msg: "Please fill all the details and select at least one image",
@@ -245,6 +247,7 @@ const EditProduct = () => {
             formData.append("height", formFields.height);
             formData.append("length", formFields.length);
             formData.append("cbm", formFields.cbm);
+            formData.append("code", formFields.code);
             formData.append("isFeatured", formFields.isFeatured);
 
             // Append all image previews
@@ -321,6 +324,7 @@ const EditProduct = () => {
                                     <h6>PRODUCT NAME</h6>
                                     <input type="text" name="name" value={formFields.name} onChange={inputChange} />
                                 </div>
+
                                 <div className="row">
                                     <div className="col">
                                         <div className="form-group">
@@ -338,6 +342,15 @@ const EditProduct = () => {
                                         <div className="form-group">
                                             <h6>HEIGHT</h6>
                                             <input type="text" name="height" value={formFields.height} onChange={inputChange} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="row">
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <h6>CODE</h6>
+                                            <input type="text" name="code" value={formFields.code} onChange={inputChange} />
                                         </div>
                                     </div>
                                     <div className="col">

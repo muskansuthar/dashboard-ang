@@ -65,6 +65,7 @@ const ProductUpload = () => {
     width: "",
     length: "",
     cbm: "",
+    code: "",
     isFeatured: null,
   });
 
@@ -190,7 +191,7 @@ const ProductUpload = () => {
     e.preventDefault();
 
     // Validate the fields
-    if (formFields.name === "" || formFields.length === "" || formFields.width === "" || formFields.height === "" ||  formFields.category === "" || formFields.legfinish === "" || formFields.legmaterial === "" || formFields.isFeatured === null || !files.length || formFields.cbm === "" ) {
+    if (formFields.name === "" || formFields.length === "" || formFields.width === "" || formFields.height === "" ||  formFields.category === "" || formFields.isFeatured === null || !files.length || formFields.cbm === "" || formFields.code === "" ) {
       context.setAlertBox({
         open: true,
         msg: "Please fill all the details and select at least one image",
@@ -213,6 +214,7 @@ const ProductUpload = () => {
       formData.append("height", formFields.height);
       formData.append("length", formFields.length);
       formData.append("cbm", formFields.cbm);
+      formData.append("code", formFields.code);
       formData.append("isFeatured", formFields.isFeatured);
 
       // Append all image previews
@@ -322,6 +324,20 @@ const ProductUpload = () => {
                         type="text"
                         name="height"
                         value={formFields.height}
+                        onChange={inputChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="col">
+                    <div className="form-group">
+                      <h6>CODE</h6>
+                      <input
+                        type="text"
+                        name="code"
+                        value={formFields.code}
                         onChange={inputChange}
                       />
                     </div>
