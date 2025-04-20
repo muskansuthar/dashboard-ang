@@ -79,7 +79,7 @@ const EditMobileimage = () => {
             const files = e.target.files;
 
             for (let i = 0; i < files.length; i++) {
-                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
+                if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/webp' || files[i].type === 'image/png')) {
                     setimgFiles(files)
                     imgArr.push(files[i]);
                 } else {

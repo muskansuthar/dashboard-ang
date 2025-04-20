@@ -149,7 +149,7 @@ const ProductUpload = () => {
   };
 
   const handleChangeisFeaturedValue = (event) => {
-    setIsFeaturedValue(event.target.value); 
+    setIsFeaturedValue(event.target.value);
     setFormFields(() => ({
       ...formFields,
       isFeatured: event.target.value,
@@ -169,7 +169,7 @@ const ProductUpload = () => {
       const files = e.target.files;
 
       for (let i = 0; i < files.length; i++) {
-        if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/png')) {
+        if (files[i] && (files[i].type === 'image/jpeg' || files[i].type === 'image/jpg' || files[i].type === 'image/webp' || files[i].type === 'image/png')) {
           setimgFiles(files)
           imgArr.push(files[i]);
         } else {
@@ -191,7 +191,7 @@ const ProductUpload = () => {
     e.preventDefault();
 
     // Validate the fields
-    if (formFields.name === "" || formFields.length === "" || formFields.width === "" || formFields.height === "" ||  formFields.category === "" || formFields.isFeatured === null || !files.length || formFields.cbm === "" || formFields.code === "" ) {
+    if (formFields.name === "" || formFields.length === "" || formFields.width === "" || formFields.height === "" || formFields.category === "" || formFields.isFeatured === null || !files.length || formFields.cbm === "" || formFields.code === "") {
       context.setAlertBox({
         open: true,
         msg: "Please fill all the details and select at least one image",
